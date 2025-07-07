@@ -48,6 +48,12 @@
         body {
             background: linear-gradient(to bottom right, #e0f2fe, #bfdbfe);
             font-family: 'Arial', sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .logo {
+            max-width: 100px;
+            margin: 0 auto;
         }
         @media print {
             body {
@@ -77,9 +83,9 @@
         }
     </style>
 </head>
-<body class="min-h-screen p-6">
+<body>
     <header class="text-center mb-8">
-        <img src="https://via.placeholder.com/100" alt="School Logo" class="logo mx-auto mb-4">
+        <img src="https://via.placeholder.com/100" alt="School Logo" class="logo mb-4">
         <h1 class="text-4xl font-bold text-blue-800">Revival Agent School</h1>
         <h2 class="text-2xl font-semibold text-blue-600">Report Card Recorder</h2>
     </header>
@@ -133,6 +139,27 @@
                 </div>
             </div>
 
+            <div id="thirdTermInputs" class="hidden space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="firstTermTotal" class="block text-sm font-medium text-gray-700">First Term Total Score:</label>
+                        <input type="number" id="firstTermTotal" class="mt-1 p-2 w-full border rounded-md" min="0" placeholder="Enter First Term Total">
+                    </div>
+                    <div>
+                        <label for="firstTermAverage" class="block text-sm font-medium text-gray-700">First Term Average Score:</label>
+                        <input type="number" id="firstTermAverage" class="mt-1 p-2 w-full border rounded-md" min="0" step="0.01" placeholder="Enter First Term Average">
+                    </div>
+                    <div>
+                        <label for="secondTermTotal" class="block text-sm font-medium text-gray-700">Second Term Total Score:</label>
+                        <input type="number" id="secondTermTotal" class="mt-1 p-2 w-full border rounded-md" min="0" placeholder="Enter Second Term Total">
+                    </div>
+                    <div>
+                        <label for="secondTermAverage" class="block text-sm font-medium text-gray-700">Second Term Average Score:</label>
+                        <input type="number" id="secondTermAverage" class="mt-1 p-2 w-full border rounded-md" min="0" step="0.01" placeholder="Enter Second Term Average">
+                    </div>
+                </div>
+            </div>
+
             <div>
                 <label class="block text-sm font-medium text-gray-700">Subject Scores (1st Test: 20, 2nd Test: 20, 3rd Test: 20, Exam: 40)</label>
                 <div id="subjects" class="space-y-2">
@@ -165,18 +192,18 @@
         </form>
     </section>
 
-    <section id="reportCard" class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg mb-8 report-card hidden">
+    <section id="reportCard" class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg mb-8 report-card">
         <header class="text-center mb-6">
-            <img src="https://via.placeholder.com/100" alt="School Logo" class="logo mx-auto mb-4">
+            <img src="https://via.placeholder.com/100" alt="School Logo" class="logo mb-4">
             <h1 class="text-3xl font-bold text-blue-800">Revival Agent School</h1>
             <h2 class="text-xl font-semibold text-blue-600">Report Card</h2>
         </header>
         <div class="space-y-4">
-            <p><strong>Student Name:</strong> <span id="reportStudentName"></span></p>
-            <p><strong>Admission Number:</strong> <span id="reportAdmissionNumber"></span></p>
-            <p><strong>Class:</strong> <span id="reportClass"></span></p>
-            <p><strong>Term:</strong> <span id="reportTerm"></span></p>
-            <p><strong>Academic Session:</strong> <span id="reportSession"></span></p>
+            <p><strong>Student Name:</strong> <span id="reportStudentName">N/A</span></p>
+            <p><strong>Admission Number:</strong> <span id="reportAdmissionNumber">N/A</span></p>
+            <p><strong>Class:</strong> <span id="reportClass">N/A</span></p>
+            <p><strong>Term:</strong> <span id="reportTerm">N/A</span></p>
+            <p><strong>Academic Session:</strong> <span id="reportSession">N/A</span></p>
             <h3 class="text-lg font-bold text-blue-700">Grades:</h3>
             <table class="w-full border-collapse">
                 <thead>
@@ -191,17 +218,19 @@
                         <th class="border p-2">Position</th>
                     </tr>
                 </thead>
-                <tbody id="reportGrades"></tbody>
+                <tbody id="reportGrades">
+                    <tr><td colspan="8" class="border p-2 text-center">No grades entered yet</td></tr>
+                </tbody>
             </table>
             <div class="space-y-2">
-                <p><strong>Overall Total Score:</strong> <span id="overallTotal"></span></p>
-                <p><strong>Overall Average Score:</strong> <span id="overallAverage"></span></p>
-                <p><strong>Overall Position:</strong> <span id="overallPosition"></span></p>
-                <p><strong>Cumulative Total (Third Term):</strong> <span id="cumulativeTotal"></span></p>
-                <p><strong>Cumulative Average (Third Term):</strong> <span id="cumulativeAverage"></span></p>
+                <p><strong>Overall Total Score:</strong> <span id="overallTotal">N/A</span></p>
+                <p><strong>Overall Average Score:</strong> <span id="overallAverage">N/A</span></p>
+                <p><strong>Overall Position:</strong> <span id="overallPosition">N/A</span></p>
+                <p><strong>Cumulative Total (Third Term):</strong> <span id="cumulativeTotal">N/A</span></p>
+                <p><strong>Cumulative Average (Third Term):</strong> <span id="cumulativeAverage">N/A</span></p>
             </div>
-            <p><strong>Teacher's Remarks:</strong> <span id="reportTeacherRemarks"></span></p>
-            <p><strong>Principal's Remarks:</strong> <span id="reportPrincipalRemarks"></span></p>
+            <p><strong>Teacher's Remarks:</strong> <span id="reportTeacherRemarks">N/A</span></p>
+            <p><strong>Principal's Remarks:</strong> <span id="reportPrincipalRemarks">N/A</span></p>
         </div>
         <div class="flex space-x-4 mt-4">
             <button id="printReport" class="bg-blue-500 text-white px-4 py-2 rounded-md no-print">Print Report Card</button>
@@ -212,7 +241,7 @@
     <section class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg no-print">
         <h3 class="text-xl font-bold text-blue-700 mb-4">Saved Report Cards (Local Storage)</h3>
         <p class="text-sm text-gray-600 mb-4">Note: Data saved here is only on *this browser and device*. For permanent storage, a backend system is required.</p>
-        <div id="savedReports" class="space-y-2"></div>
+        <div id="savedReports" class="space-y-2">No saved reports yet</div>
     </section>
 
     <script>
@@ -225,6 +254,22 @@
             return 'F';
         }
 
+        document.getElementById('term').addEventListener('change', (e) => {
+            const thirdTermInputs = document.getElementById('thirdTermInputs');
+            thirdTermInputs.classList.toggle('hidden', e.target.value !== 'Third Term');
+            if (e.target.value === 'Third Term') {
+                document.getElementById('firstTermTotal').setAttribute('required', '');
+                document.getElementById('firstTermAverage').setAttribute('required', '');
+                document.getElementById('secondTermTotal').setAttribute('required', '');
+                document.getElementById('secondTermAverage').setAttribute('required', '');
+            } else {
+                document.getElementById('firstTermTotal').removeAttribute('required');
+                document.getElementById('firstTermAverage').removeAttribute('required');
+                document.getElementById('secondTermTotal').removeAttribute('required');
+                document.getElementById('secondTermAverage').removeAttribute('required');
+            }
+        });
+
         document.getElementById('addSubject').addEventListener('click', () => {
             const subjectsDiv = document.getElementById('subjects');
             const newRow = document.createElement('div');
@@ -234,7 +279,8 @@
                 <input type="number" class="test1 p-2 w-1/6 border rounded-md" placeholder="1st Test (20)" min="0" max="20" required>
                 <input type="number" class="test2 p-2 w-1/6 border rounded-md" placeholder="2nd Test (20)" min="0" max="20" required>
                 <input type="number" class="test3 p-2 w-1/6 border rounded-md" placeholder="3rd Test (20)" min="0" max="20" required>
-                <input type="number" class="exam p-2 w-1/6 border rounded-md" placeholder="Exam (40)" min="0" max="40" required>
+                <input type="number" class="exam p-2 w-1/6 border rounded-md" placeholder="Exam (40)" min="0" max="40" required
+
                 <input type="text" class="position p-2 w-1/6 border rounded-md" placeholder="Position" required>
                 <button type="button" class="remove-subject bg-red-500 text-white px-2 py-1 rounded-md">Remove</button>
             `;
@@ -255,170 +301,195 @@
                     <button type="button" class="remove-subject bg-red-500 text-white px-2 py-1 rounded-md">Remove</button>
                 </div>
             `;
+            document.getElementById('thirdTermInputs').classList.add('hidden');
             document.getElementById('reportCard').classList.add('hidden');
+            console.log('Form cleared');
         });
 
         document.getElementById('reportForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            const studentName = document.getElementById('studentName').value;
-            const admissionNumber = document.getElementById('admissionNumber').value;
-            const studentClass = document.getElementById('class').value;
-            const term = document.getElementById('term').value;
-            const session = document.getElementById('session').value;
-            const overallPosition = document.getElementById('overallPosition').value;
-            const teacherRemarks = document.getElementById('teacherRemarks').value;
-            const principalRemarks = document.getElementById('principalRemarks').value;
+            console.log('Form submitted');
+            try {
+                const studentName = document.getElementById('studentName').value;
+                const admissionNumber = document.getElementById('admissionNumber').value;
+                const studentClass = document.getElementById('class').value;
+                const term = document.getElementById('term').value;
+                const session = document.getElementById('session').value;
+                const overallPosition = document.getElementById('overallPosition').value;
+                const teacherRemarks = document.getElementById('teacherRemarks').value;
+                const principalRemarks = document.getElementById('principalRemarks').value;
 
-            const subjects = Array.from(document.querySelectorAll('.subject-row')).map(row => {
-                const subjectName = row.querySelector('.subject-name').value;
-                const test1 = parseFloat(row.querySelector('.test1').value) || 0;
-                const test2 = parseFloat(row.querySelector('.test2').value) || 0;
-                const test3 = parseFloat(row.querySelector('.test3').value) || 0;
-                const exam = parseFloat(row.querySelector('.exam').value) || 0;
-                const position = row.querySelector('.position').value;
-                const total = test1 + test2 + test3 + exam;
-                const grade = getGrade(total);
-                return { subjectName, test1, test2, test3, exam, total, grade, position };
-            });
+                const subjects = Array.from(document.querySelectorAll('.subject-row')).map(row => {
+                    const subjectName = row.querySelector('.subject-name').value;
+                    const test1 = parseFloat(row.querySelector('.test1').value) || 0;
+                    const test2 = parseFloat(row.querySelector('.test2').value) || 0;
+                    const test3 = parseFloat(row.querySelector('.test3').value) || 0;
+                    const exam = parseFloat(row.querySelector('.exam').value) || 0;
+                    const position = row.querySelector('.position').value;
+                    const total = test1 + test2 + test3 + exam;
+                    const grade = getGrade(total);
+                    return { subjectName, test1, test2, test3, exam, total, grade, position };
+                });
 
-            const overallTotal = subjects.reduce((sum, s) => sum + s.total, 0);
-            const overallAverage = (overallTotal / (subjects.length * 100) * 100).toFixed(2);
+                const overallTotal = subjects.reduce((sum, s) => sum + s.total, 0);
+                const overallAverage = (overallTotal / (subjects.length * 100) * 100).toFixed(2);
 
-            // Calculate cumulative scores for Third Term
-            let cumulativeTotal = overallTotal;
-            let cumulativeAverage = overallAverage;
-            let totalTerms = 1;
-            let cumulativeSubjectCount = subjects.length;
-            if (term === 'Third Term') {
-                const savedReports = JSON.parse(localStorage.getItem('reportCards') || '[]');
-                const firstTerm = savedReports.find(r => r.admissionNumber === admissionNumber && r.term === 'First Term' && r.session === session);
-                const secondTerm = savedReports.find(r => r.admissionNumber === admissionNumber && r.term === 'Second Term' && r.session === session);
-                if (firstTerm) {
-                    cumulativeTotal += firstTerm.overallTotal;
-                    cumulativeSubjectCount += firstTerm.grades.length;
-                    totalTerms++;
+                // Calculate cumulative scores for Third Term
+                let cumulativeTotal = overallTotal;
+                let cumulativeAverage = parseFloat(overallAverage);
+                if (term === 'Third Term') {
+                    const firstTermTotal = parseFloat(document.getElementById('firstTermTotal').value) || 0;
+                    const firstTermAverage = parseFloat(document.getElementById('firstTermAverage').value) || 0;
+                    const secondTermTotal = parseFloat(document.getElementById('secondTermTotal').value) || 0;
+                    const secondTermAverage = parseFloat(document.getElementById('secondTermAverage').value) || 0;
+                    cumulativeTotal += firstTermTotal + secondTermTotal;
+                    cumulativeAverage = ((firstTermAverage + secondTermAverage + parseFloat(overallAverage)) / 3).toFixed(2);
+                } else {
+                    cumulativeTotal = 'N/A';
+                    cumulativeAverage = 'N/A';
                 }
-                if (secondTerm) {
-                    cumulativeTotal += secondTerm.overallTotal;
-                    cumulativeSubjectCount += secondTerm.grades.length;
-                    totalTerms++;
-                }
-                cumulativeAverage = (cumulativeTotal / (cumulativeSubjectCount * 100) * 100).toFixed(2);
+
+                // Populate report card
+                document.getElementById('reportStudentName').textContent = studentName || 'N/A';
+                document.getElementById('reportAdmissionNumber').textContent = admissionNumber || 'N/A';
+                document.getElementById('reportClass').textContent = studentClass || 'N/A';
+                document.getElementById('reportTerm').textContent = term || 'N/A';
+                document.getElementById('reportSession').textContent = session || 'N/A';
+                document.getElementById('reportTeacherRemarks').textContent = teacherRemarks || 'N/A';
+                document.getElementById('reportPrincipalRemarks').textContent = principalRemarks || 'N/A';
+                document.getElementById('overallTotal').textContent = overallTotal || 'N/A';
+                document.getElementById('overallAverage').textContent = overallAverage || 'N/A';
+                document.getElementById('overallPosition').textContent = overallPosition || 'N/A';
+                document.getElementById('cumulativeTotal').textContent = cumulativeTotal;
+                document.getElementById('cumulativeAverage').textContent = cumulativeAverage;
+
+                const gradesTable = document.getElementById('reportGrades');
+                gradesTable.innerHTML = subjects.length ? subjects.map(s => `
+                    <tr>
+                        <td class="border p-2">${s.subjectName}</td>
+                        <td class="border p-2">${s.test1}</td>
+                        <td class="border p-2">${s.test2}</td>
+                        <td class="border p-2">${s.test3}</td>
+                        <td class="border p-2">${s.exam}</td>
+                        <td class="border p-2">${s.total}</td>
+                        <td class="border p-2">${s.grade}</td>
+                        <td class="border p-2">${s.position}</td>
+                    </tr>
+                `).join('') : '<tr><td colspan="8" class="border p-2 text-center">No grades entered yet</td></tr>';
+
+                document.getElementById('reportCard').classList.remove('hidden');
+                console.log('Report card populated:', { studentName, admissionNumber, term, overallTotal, cumulativeTotal });
+            } catch (error) {
+                console.error('Error generating report card:', error);
+                alert('An error occurred while generating the report card. Please check the console for details.');
             }
-
-            // Populate report card
-            document.getElementById('reportStudentName').textContent = studentName;
-            document.getElementById('reportAdmissionNumber').textContent = admissionNumber;
-            document.getElementById('reportClass').textContent = studentClass;
-            document.getElementById('reportTerm').textContent = term;
-            document.getElementById('reportSession').textContent = session;
-            document.getElementById('reportTeacherRemarks').textContent = teacherRemarks;
-            document.getElementById('reportPrincipalRemarks').textContent = principalRemarks;
-            document.getElementById('overallTotal').textContent = overallTotal;
-            document.getElementById('overallAverage').textContent = overallAverage;
-            document.getElementById('overallPosition').textContent = overallPosition || 'N/A';
-            document.getElementById('cumulativeTotal').textContent = term === 'Third Term' ? cumulativeTotal : 'N/A';
-            document.getElementById('cumulativeAverage').textContent = term === 'Third Term' ? cumulativeAverage : 'N/A';
-
-            const gradesTable = document.getElementById('reportGrades');
-            gradesTable.innerHTML = subjects.map(s => `
-                <tr>
-                    <td class="border p-2">${s.subjectName}</td>
-                    <td class="border p-2">${s.test1}</td>
-                    <td class="border p-2">${s.test2}</td>
-                    <td class="border p-2">${s.test3}</td>
-                    <td class="border p-2">${s.exam}</td>
-                    <td class="border p-2">${s.total}</td>
-                    <td class="border p-2">${s.grade}</td>
-                    <td class="border p-2">${s.position}</td>
-                </tr>
-            `).join('');
-
-            document.getElementById('reportCard').classList.remove('hidden');
         });
 
         document.getElementById('printReport').addEventListener('click', () => {
+            console.log('Printing report card');
             window.print();
         });
 
         document.getElementById('saveReport').addEventListener('click', () => {
-            const report = {
-                studentName: document.getElementById('reportStudentName').textContent,
-                admissionNumber: document.getElementById('reportAdmissionNumber').textContent,
-                class: document.getElementById('reportClass').textContent,
-                term: document.getElementById('reportTerm').textContent,
-                session: document.getElementById('reportSession').textContent,
-                grades: Array.from(document.getElementById('reportGrades').children).map(row => ({
-                    subjectName: row.children[0].textContent,
-                    test1: parseFloat(row.children[1].textContent),
-                    test2: parseFloat(row.children[2].textContent),
-                    test3: parseFloat(row.children[3].textContent),
-                    exam: parseFloat(row.children[4].textContent),
-                    total: parseFloat(row.children[5].textContent),
-                    grade: row.children[6].textContent,
-                    position: row.children[7].textContent
-                })),
-                overallTotal: parseFloat(document.getElementById('overallTotal').textContent),
-                overallAverage: parseFloat(document.getElementById('overallAverage').textContent),
-                overallPosition: document.getElementById('overallPosition').textContent,
-                teacherRemarks: document.getElementById('reportTeacherRemarks').textContent,
-                principalRemarks: document.getElementById('reportPrincipalRemarks').textContent,
-                cumulativeTotal: document.getElementById('cumulativeTotal').textContent,
-                cumulativeAverage: document.getElementById('cumulativeAverage').textContent
-            };
-            const savedReports = JSON.parse(localStorage.getItem('reportCards') || '[]');
-            savedReports.push(report);
-            localStorage.setItem('reportCards', JSON.stringify(savedReports));
-            displaySavedReports();
+            try {
+                const report = {
+                    studentName: document.getElementById('reportStudentName').textContent,
+                    admissionNumber: document.getElementById('reportAdmissionNumber').textContent,
+                    class: document.getElementById('reportClass').textContent,
+                    term: document.getElementById('reportTerm').textContent,
+                    session: document.getElementById('reportSession').textContent,
+                    grades: Array.from(document.getElementById('reportGrades').children).map(row => ({
+                        subjectName: row.children[0].textContent,
+                        test1: parseFloat(row.children[1].textContent) || 0,
+                        test2: parseFloat(row.children[2].textContent) || 0,
+                        test3: parseFloat(row.children[3].textContent) || 0,
+                        exam: parseFloat(row.children[4].textContent) || 0,
+                        total: parseFloat(row.children[5].textContent) || 0,
+                        grade: row.children[6].textContent,
+                        position: row.children[7].textContent
+                    })),
+                    overallTotal: document.getElementById('overallTotal').textContent,
+                    overallAverage: document.getElementById('overallAverage').textContent,
+                    overallPosition: document.getElementById('overallPosition').textContent,
+                    teacherRemarks: document.getElementById('reportTeacherRemarks').textContent,
+                    principalRemarks: document.getElementById('reportPrincipalRemarks').textContent,
+                    cumulativeTotal: document.getElementById('cumulativeTotal').textContent,
+                    cumulativeAverage: document.getElementById('cumulativeAverage').textContent
+                };
+                const savedReports = JSON.parse(localStorage.getItem('reportCards') || '[]');
+                savedReports.push(report);
+                localStorage.setItem('reportCards', JSON.stringify(savedReports));
+                displaySavedReports();
+                console.log('Report saved:', report);
+                alert('Report card saved successfully!');
+            } catch (error) {
+                console.error('Error saving report card:', error);
+                alert('An error occurred while saving the report card. Please check the console for details.');
+            }
         });
 
         function displaySavedReports() {
-            const savedReports = JSON.parse(localStorage.getItem('reportCards') || '[]');
-            const savedReportsDiv = document.getElementById('savedReports');
-            savedReportsDiv.innerHTML = savedReports.map((report, index) => `
-                <div class="border p-4 rounded-md">
-                    <p><strong>Student:</strong> ${report.studentName}</p>
-                    <p><strong>Admission Number:</strong> ${report.admissionNumber}</p>
-                    <p><strong>Class:</strong> ${report.class}</p>
-                    <p><strong>Term:</strong> ${report.term}</p>
-                    <p><strong>Session:</strong> ${report.session}</p>
-                    <button class="view-report bg-blue-500 text-white px-4 py-2 rounded-md mt-2" data-index="${index}">View Report</button>
-                </div>
-            `).join('');
-            document.querySelectorAll('.view-report').forEach(button => {
-                button.addEventListener('click', () => {
-                    const index = button.getAttribute('data-index');
-                    const report = savedReports[index];
-                    document.getElementById('reportStudentName').textContent = report.studentName;
-                    document.getElementById('reportAdmissionNumber').textContent = report.admissionNumber;
-                    document.getElementById('reportClass').textContent = report.class;
-                    document.getElementById('reportTerm').textContent = report.term;
-                    document.getElementById('reportSession').textContent = report.session;
-                    document.getElementById('reportTeacherRemarks').textContent = report.teacherRemarks;
-                    document.getElementById('reportPrincipalRemarks').textContent = report.principalRemarks;
-                    document.getElementById('overallTotal').textContent = report.overallTotal;
-                    document.getElementById('overallAverage').textContent = report.overallAverage;
-                    document.getElementById('overallPosition').textContent = report.overallPosition;
-                    document.getElementById('cumulativeTotal').textContent = report.cumulativeTotal;
-                    document.getElementById('cumulativeAverage').textContent = report.cumulativeAverage;
-                    document.getElementById('reportGrades').innerHTML = report.grades.map(s => `
-                        <tr>
-                            <td class="border p-2">${s.subjectName}</td>
-                            <td class="border p-2">${s.test1}</td>
-                            <td class="border p-2">${s.test2}</td>
-                            <td class="border p-2">${s.test3}</td>
-                            <td class="border p-2">${s.exam}</td>
-                            <td class="border p-2">${s.total}</td>
-                            <td class="border p-2">${s.grade}</td>
-                            <td class="border p-2">${s.position}</td>
-                        </tr>
-                    `).join('');
-                    document.getElementById('reportCard').classList.remove('hidden');
+            try {
+                const savedReports = JSON.parse(localStorage.getItem('reportCards') || '[]');
+                const savedReportsDiv = document.getElementById('savedReports');
+                savedReportsDiv.innerHTML = savedReports.length ? savedReports.map((report, index) => `
+                    <div class="border p-4 rounded-md">
+                        <p><strong>Student:</strong> ${report.studentName}</p>
+                        <p><strong>Admission Number:</strong> ${report.admissionNumber}</p>
+                        <p><strong>Class:</strong> ${report.class}</p>
+                        <p><strong>Term:</strong> ${report.term}</p>
+                        <p><strong>Session:</strong> ${report.session}</p>
+                        <button class="view-report bg-blue-500 text-white px-4 py-2 rounded-md mt-2" data-index="${index}">View Report</button>
+                    </div>
+                `).join('') : 'No saved reports yet';
+                document.querySelectorAll('.view-report').forEach(button => {
+                    button.addEventListener('click', () => {
+                        try {
+                            const index = button.getAttribute('data-index');
+                            const report = savedReports[index];
+                            document.getElementById('reportStudentName').textContent = report.studentName;
+                            document.getElementById('reportAdmissionNumber').textContent = report.admissionNumber;
+                            document.getElementById('reportClass').textContent = report.class;
+                            document.getElementById('reportTerm').textContent = report.term;
+                            document.getElementById('reportSession').textContent = report.session;
+                            document.getElementById('reportTeacherRemarks').textContent = report.teacherRemarks;
+                            document.getElementById('reportPrincipalRemarks').textContent = report.principalRemarks;
+                            document.getElementById('overallTotal').textContent = report.overallTotal;
+                            document.getElementById('overallAverage').textContent = report.overallAverage;
+                            document.getElementById('overallPosition').textContent = report.overallPosition;
+                            document.getElementById('cumulativeTotal').textContent = report.cumulativeTotal;
+                            document.getElementById('cumulativeAverage').textContent = report.cumulativeAverage;
+                            document.getElementById('reportGrades').innerHTML = report.grades.length ? report.grades.map(s => `
+                                <tr>
+                                    <td class="border p-2">${s.subjectName}</td>
+                                    <td class="border p-2">${s.test1}</td>
+                                    <td class="border p-2">${s.test2}</td>
+                                    <td class="border p-2">${s.test3}</td>
+                                    <td class="border p-2">${s.exam}</td>
+                                    <td class="border p-2">${s.total}</td>
+                                    <td class="border p-2">${s.grade}</td>
+                                    <td class="border p-2">${s.position}</td>
+                                </tr>
+                            `).join('') : '<tr><td colspan="8" class="border p-2 text-center">No grades entered yet</td></tr>';
+                            document.getElementById('reportCard').classList.remove('hidden');
+                            console.log('Viewing saved report:', report);
+                        } catch (error) {
+                            console.error('Error viewing saved report:', error);
+                            alert('An error occurred while viewing the report. Please check the console for details.');
+                        }
+                    });
                 });
-            });
+                console.log('Saved reports displayed:', savedReports.length);
+            } catch (error) {
+                console.error('Error displaying saved reports:', error);
+                alert('An error occurred while loading saved reports. Please check the console for details.');
+            }
         }
 
-        document.addEventListener('DOMContentLoaded', displaySavedReports);
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Page loaded, initializing...');
+            displaySavedReports();
+        });
     </script>
 </body>
 </html>
