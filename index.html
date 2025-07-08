@@ -333,7 +333,6 @@
             </div>
             <div class="remarks">
                 <p class="text-base"><strong>Teacher's Remarks:</strong> <span id="reportTeacherRemarks">N/A</span></p>
-                <p class="text-base"><strong>Grade:</strong> <span id="reportGrade">N/A</span></p>
                 <p class="text-base"><strong>Principal's Remarks:</strong> <span id="reportPrincipalRemarks">__________________________</span></p>
             </div>
             <div class="signature">
@@ -461,7 +460,6 @@
                 overallPosition: document.getElementById('overallPosition'),
                 teacherRemarks: document.getElementById('teacherRemarks'),
                 principalRemarks: document.getElementById('principalRemarks'),
-                        Grade: document.getElementById('grade'),
                 firstTermTotal: document.getElementById('firstTermTotal'),
                 firstTermAverage: document.getElementById('firstTermAverage'),
                 secondTermTotal: document.getElementById('secondTermTotal'),
@@ -485,7 +483,6 @@
             elements.session.value = report.session || '';
             elements.overallPosition.value = report.overallPosition || '';
             elements.teacherRemarks.value = report.teacherRemarks || '';
-            elements.Grade.value = report.grade || '';
             elements.principalRemarks.value = report.principalRemarks === '__________________________' ? '' : report.principalRemarks || '';
 
             elements.includePhoto.checked = !!report.studentPhoto;
@@ -549,7 +546,7 @@
                 const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
                 const filename = `report_card_${studentName}_${admissionNumber}_${term}_${timestamp}.json`;
                 const jsonStr = JSON.stringify(report, null, 2);
-                const blob = new Blob([jsonStr], { type: 'application/pdf' });
+                const blob = new Blob([jsonStr], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);
                 const link = document.createElement('a');
                 link.href = url;
@@ -753,12 +750,11 @@
                     const overallPositionInput = document.getElementById('overallPosition');
                     const teacherRemarksInput = document.getElementById('teacherRemarks');
                     const principalRemarksInput = document.getElementById('principalRemarks');
-                    const GradeInput = document.getElementById('Grade');
                     const editIndexInput = document.getElementById('editIndex');
                     const includePhotoCheckbox = document.getElementById('includePhoto');
                     const studentPhotoInput = document.getElementById('studentPhoto');
 
-                    if (!studentNameInput || !admissionNumberInput || !classSelect || !termSelect || !sessionInput || !overallPositionInput || !teacherRemarksInput || !principalRemarksInput || !GradeInput || !editIndexInput || !includePhotoCheckbox || !studentPhotoInput) {
+                    if (!studentNameInput || !admissionNumberInput || !classSelect || !termSelect || !sessionInput || !overallPositionInput || !teacherRemarksInput || !principalRemarksInput || !editIndexInput || !includePhotoCheckbox || !studentPhotoInput) {
                         console.error('One or more form inputs are missing');
                         return;
                     }
@@ -770,7 +766,6 @@
                     const session = sessionInput.value;
                     const overallPosition = overallPositionInput.value;
                     const teacherRemarks = teacherRemarksInput.value;
-                    const Grade = GradeInput.value;
                     const principalRemarks = principalRemarksInput.value || '__________________________';
                     const editIndex = parseInt(editIndexInput.value);
                     const studentPhoto = includePhotoCheckbox.checked ? studentPhotoInput.getAttribute('data-base64') || '' : '';
@@ -831,7 +826,6 @@
                     const reportSession = document.getElementById('reportSession');
                     const reportTeacherRemarks = document.getElementById('reportTeacherRemarks');
                     const reportPrincipalRemarks = document.getElementById('reportPrincipalRemarks');
-                    const reportGrade= document.getElementById('reportGrade');
                     const overallTotalSpan = document.getElementById('overallTotal');
                     const overallAverageSpan = document.getElementById('overallAverage');
                     const overallPositionSpan = document.getElementById('overallPosition');
@@ -841,7 +835,7 @@
                     const reportCard = document.getElementById('reportCard');
                     const reportStudentPhoto = document.getElementById('reportStudentPhoto');
 
-                    if (!reportStudentName || !reportAdmissionNumber || !reportClass || !reportTerm || !reportSession || !reportTeacherRemarks || !reportPrincipalRemarks || !reportGrade || !overallTotalSpan || !overallAverageSpan || !overallPositionSpan || !cumulativeTotalSpan || !cumulativeAverageSpan || !gradesTable || !reportCard || !reportStudentPhoto) {
+                    if (!reportStudentName || !reportAdmissionNumber || !reportClass || !reportTerm || !reportSession || !reportTeacherRemarks || !reportPrincipalRemarks || !overallTotalSpan || !overallAverageSpan || !overallPositionSpan || !cumulativeTotalSpan || !cumulativeAverageSpan || !gradesTable || !reportCard || !reportStudentPhoto) {
                         console.error('One or more report card elements are missing');
                         return;
                     }
@@ -853,7 +847,6 @@
                     reportSession.textContent = session || 'N/A';
                     reportTeacherRemarks.textContent = teacherRemarks || 'N/A';
                     reportPrincipalRemarks.textContent = principalRemarks;
-                    reportGrade.textContent = Grade;
                     overallTotalSpan.textContent = overallTotal || 'N/A';
                     overallAverageSpan.textContent = overallAverage || 'N/A';
                     overallPositionSpan.textContent = overallPosition || 'N/A';
@@ -890,7 +883,6 @@
                         principalRemarks,
                         cumulativeTotal,
                         cumulativeAverage,
-                                 grade.
                         firstTermTotal,
                         firstTermAverage,
                         secondTermTotal,
@@ -952,7 +944,6 @@
                         principalRemarks: document.getElementById('reportPrincipalRemarks')?.textContent,
                         cumulativeTotal: document.getElementById('cumulativeTotal')?.textContent,
                         cumulativeAverage: document.getElementById('cumulativeAverage')?.textContent,
-                                  Grade: document.getElementById('reportGrade')?.textContent,
                         studentPhoto: document.getElementById('reportStudentPhoto')?.src || ''
                     };
                     shareReport(report);
@@ -999,7 +990,6 @@
                                     reportSession: document.getElementById('reportSession'),
                                     reportTeacherRemarks: document.getElementById('reportTeacherRemarks'),
                                     reportPrincipalRemarks: document.getElementById('reportPrincipalRemarks'),
-                                    reportGrade: document.getElementById('reportGrade'),
                                     overallTotal: document.getElementById('overallTotal'),
                                     overallAverage: document.getElementById('overallAverage'),
                                     overallPosition: document.getElementById('overallPosition'),
@@ -1019,8 +1009,6 @@
                                 elements.reportClass.textContent = report.class || 'N/A';
                                 elements.reportTerm.textContent = report.term || 'N/A';
                                 elements.reportSession.textContent = report.session || 'N/A';
-
-elements.reportGrade.textContent = report.grade || 'N/A';
                                 elements.reportTeacherRemarks.textContent = report.teacherRemarks || 'N/A';
                                 elements.reportPrincipalRemarks.textContent = report.principalRemarks || '__________________________';
                                 elements.overallTotal.textContent = report.overallTotal || 'N/A';
