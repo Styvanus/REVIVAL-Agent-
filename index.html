@@ -546,7 +546,7 @@
                 const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
                 const filename = `report_card_${studentName}_${admissionNumber}_${term}_${timestamp}.json`;
                 const jsonStr = JSON.stringify(report, null, 2);
-                const blob = new Blob([jsonStr], { type: 'application/html' });
+                const blob = new Blob([jsonStr], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);
                 const link = document.createElement('a');
                 link.href = url;
