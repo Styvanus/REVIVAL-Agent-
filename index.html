@@ -305,10 +305,8 @@
         <header class="report-card-header text-center">
             <img src="tom.png" alt="School Logo" class="logo mb-6">
                <h1 class="text-3xl font-bold text-blue-800">Revival Agent International School</h1>
-              <p class="text-sm text-gray-600 mt-3"> AFTER CHIEF PALACE PAZE, KUBWA, ABUJA. | Phone: +234 813 811 0476</p>
-<div class="photo-container">
-  <img id="reportStudentPhoto" class="student-photo" alt="Student Photo">
-</div>
+              <p class="text-sm text-gray-600 mt-3">123 AFTER CHIEF PALACE PAZE, KUBWA, ABUJA. | Phone: +234 813 811 0476</p>
+<img id="reportStudentPhoto" class="student-photo" alt="Student Photo">
             <h2 class="text-xl font-semibold text-blue-600 mt-4">Student Report Card</h2>
         </header>
         <div class="space-y-6">
@@ -589,7 +587,7 @@
                     suggestPrincipalRemarkButton: !!suggestPrincipalRemarkButton,
                     clearFormButton: !!clearFormButton,
                     reportForm: !!reportForm,
-                    ReportButton: !!printReportButton,
+                    printReportButton: !!printReportButton,
                     saveReportButton: !!saveReportButton,
                     shareReportButton: !!shareReportButton,
                     includePhotoCheckbox: !!includePhotoCheckbox,
@@ -1090,24 +1088,6 @@
             updateSubjectInputs();
             displaySavedReports();
         });
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const printReportButton = document.getElementById('printReport');
-        if (printReportButton) {
-            printReportButton.addEventListener('click', () => {
-                try {
-                    console.log('Initiating print on mobile...');
-                    window.print();
-                } catch (error) {
-                    console.error('Print error:', error);
-                    alert('Failed to print report card. Check console or printer setup.');
-                }
-            });
-        } else {
-            console.error('Print button not found');
-            alert('Print button not found in the page.');
-        }
-    });
     </script>
 </body>
 </html>
