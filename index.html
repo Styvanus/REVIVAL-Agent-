@@ -37,15 +37,19 @@
         }
         return gk_fileData[filename] || "";
         }
-        </script><!DOCTYPE html>
+  </script>```html
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Revival Agent School - Report Card Recorder</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js">
-</script>
+    <title>Revival Agent School</title>
+    <!-- Include jsPDF and autoTable via CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+    <style>
         body {
             background: linear-gradient(to bottom right, #e0f2fe, #bfdbfe);
             font-family: 'Arial', sans-serif;
@@ -1089,39 +1093,15 @@
             updateSubjectInputs();
             displaySavedReports();
         });
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const printButton = document.getElementById('printReport');
-        if (printButton) {
-            printButton.addEventListener('click', () => {
-                const report = document.getElementById('reportCard');
-                if (report) {
-                    // Hide buttons in PDF
-                    const buttons = document.querySelector('.flex.justify-end.space-x-6.mb-8.no-print');
-                    if (buttons) buttons.style.display = 'none';
-                    
-                    // Make and download PDF
-                    html2pdf()
-                        .from(report)
-                        .set({
-                            margin: 25,
-                            filename: 'Report_Card.pdf',
-                            html2canvas: { scale: 2 },
-                            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                        })
-                        .save()
-                        .then(() => {
-                            // Show buttons again
-                            if (buttons) buttons.style.display = 'flex';
-                        });
-                } else {
-                    alert('Please generate a report card first.');
-                }
-            });
-        } else {
-            alert('Print button not found.');
+
+            // Save the PDF
+            doc.save(`Report_Card_${studentName}_${term}.pdf`);
         }
-    });
-</script>
+
+        // Event listener for Share Report Card button
+        document.getElementById("share-report").addEventListener("click", function() {
+            generatePDF();
+        });
+    </script>
 </body>
 </html>
