@@ -589,7 +589,7 @@
                     suggestPrincipalRemarkButton: !!suggestPrincipalRemarkButton,
                     clearFormButton: !!clearFormButton,
                     reportForm: !!reportForm,
-                    ReportButton: !!printReportButton,
+                    printReportButton: !!printReportButton,
                     saveReportButton: !!saveReportButton,
                     shareReportButton: !!shareReportButton,
                     includePhotoCheckbox: !!includePhotoCheckbox,
@@ -1090,26 +1090,6 @@
             updateSubjectInputs();
             displaySavedReports();
         });
-<script>
-    // Your existing JavaScript (if any)
-    
-    document.addEventListener('DOMContentLoaded', () => {
-        const printReportButton = document.getElementById('printReport');
-        if (printReportButton) {
-            printReportButton.addEventListener('click', () => {
-                try {
-                    console.log('Initiating print on mobile...');
-                    window.print();
-                } catch (error) {
-                    console.error('Print error:', error);
-                    alert('Failed to print report card. Check console or printer setup.');
-                }
-            });
-        } else {
-            console.error('Print button not found');
-            alert('Print button not found in the page.');
-        }
-    });
     </script>
 </body>
 </html>
