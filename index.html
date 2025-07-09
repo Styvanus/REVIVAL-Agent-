@@ -42,1052 +42,873 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Revival Agent School - Report Card Recorder</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>School Report Card Generator</title>
     <style>
         body {
-            background: linear-gradient(to bottom right, #e0f2fe, #bfdbfe);
-            font-family: 'Arial', sans-serif;
-            min-height: 100vh;
-            padding: 24px;
+            font-family: 'Helvetica', sans-serif;
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #f4f6f9;
         }
-        .logo {
-            max-width: 120px;
-            margin: 0 auto;
-        }
-        .student-photo {
-            max-width: 100px;
-            margin: 16px auto;
-            border: 2px solid #1e40af;
+        .form-container, .report-container, .preview-container {
+            border: 1px solid #2c3e50;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #ffffff;
             border-radius: 8px;
-            display: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
         }
-        .input-large {
-            font-size: 1.125rem;
-            padding: 1rem;
-            border-radius: 6px;
-        }
-        .subject-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.75rem;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-        .subject-row input {
-            flex: 1;
-            min-width: 120px;
-        }
-        .subject-row .subject-name {
-            flex: 2;
-            min-width: 180px;
-        }
-        .subject-row .remove-subject {
-            flex: 0 0 auto;
-        }
-        @media (max-width: 768px) {
-            .subject-row input {
-                min-width: 100px;
-            }
-            .subject-row .subject-name {
-                min-width: 140px;
-            }
-        }
-        .report-card {
-            font-family: 'Times New Roman', serif;
-            border: 2px solid #1e40af;
-            background: white;
-            padding: 30px;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        .background-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
             border-radius: 8px;
         }
-        .report-card-header {
-            border-bottom: 2px solid #1e40af;
-            padding-bottom: 16px;
-            margin-bottom: 24px;
-        }
-        .report-card table {
+        table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 24px;
+            margin-top: 15px;
         }
-        .report-card th, .report-card td {
+        th, td {
             border: 1px solid #d1d5db;
-            padding: 12px;
+            padding: 6px;
             text-align: center;
-            font-size: 0.9375rem;
         }
-        .report-card th {
-            background: #1e40af;
-            color: white;
-            font-weight: bold;
+        th {
+            background-color: #2c3e50;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 10px;
         }
-        .report-card td:first-child {
-            text-align: left;
-        }
-        .report-card tr:nth-child(even) {
-            background: #f9fafb;
-        }
-        .report-card .summary {
-            border-top: 2px solid #1e40af;
-            padding-top: 16px;
-            margin-top: 16px;
-        }
-        .report-card .remarks {
+        .grade-A { color: #28a745; font-weight: bold; }
+        .grade-B { color: #007bff; font-weight: bold; }
+        .grade-C { color: #fd7e14; font-weight: bold; }
+        .grade-D { color: #6f42c1; font-weight: bold; }
+        .grade-F { color: #dc3545; font-weight: bold; }
+        .logo-container {
+            width: 100px;
+            height: 100px;
             border: 1px solid #d1d5db;
-            padding: 12px;
-            margin-top: 16px;
-            font-style: italic;
-            font-size: 1rem;
-        }
-        .report-card .signature {
-            margin-top: 32px;
+            margin: 10px auto;
+            background-color: #f9fafb;
             display: flex;
-            flex-direction: column;
-            gap: 24px;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border-radius: 4px;
         }
-        .report-card .signature div {
+        .photo-container {
+            width: 100px;
+            height: 100px;
+            margin: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border-radius: 8px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 8px;
+        }
+        .header-container {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .school-name {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin: 8px 0 4px 0;
+        }
+        .school-info p {
+            margin: 4px 0;
+            text-align: center;
+            font-size: 11px;
+            color: #2c3e50;
+        }
+        .report-title {
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+            text-transform: uppercase;
+            text-decoration: underline;
+            margin: 4px 0;
+            color: #2c3e50;
+        }
+        .student-details {
+            background: linear-gradient(to right, #e0e7ff, #f0f4ff);
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        .saved-report-card {
-            background: #f9fafb;
+        .student-details p {
+            font-size: 14px;
+            font-weight: 600;
+            margin: 4px 0;
+        }
+        .student-details p.student-name span, .student-details p.admission-number span {
+            font-weight: 700;
+        }
+        button {
+            padding: 8px 16px;
+            margin: 5px;
+            cursor: pointer;
+            background-color: #2c3e50;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #34495e;
+        }
+        .remarks, .school-info, .grade-summary {
+            margin-top: 15px;
+        }
+        .remarks p, .student-title p {
+            font-size: 12px;
+            margin: 4px 0;
+        }
+        .student-title {
+            text-align: center;
+            font-style: italic;
+        }
+        textarea {
+            width: 100%;
+            height: 80px;
+            margin-top: 5px;
             border: 1px solid #d1d5db;
-            border-radius: 6px;
-            padding: 16px;
+            border-radius: 4px;
+            padding: 8px;
+            font-size: 14px;
         }
-        @media print {
-            body {
-                background: none;
-                padding: 0;
-            }
-            .no-print {
-                display: none;
-            }
-            .report-card {
-                margin: 0;
-                padding: 20mm;
-                border: none;
-                box-shadow: none;
-                width: 210mm;
-                min-height: 297mm;
-            }
-            .logo, .student-photo {
-                max-width: 100px;
-            }
-            .report-card table, .report-card th, .report-card td {
-                border: 1px solid black;
-            }
-            .report-card th {
-                background: #1e40af;
-                color: white;
-            }
-            .report-card tr:nth-child(even) {
-                background: #f9fafb;
-            }
+        input, select {
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        label {
+            font-weight: 500;
+            margin-right: 10px;
+        }
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        .preview-container {
+            display: none;
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.3/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
-    <header class="text-center mb-10 no-print">
-        <img src="tom.png" alt="School Logo" class="logo mb-6">
-        <h1 class="text-4xl font-bold text-blue-800">Revival Agent School</h1>
-        <h2 class="text-2xl font-semibold text-blue-600 mt-2">Report Card Recorder</h2>
-    </header>
-
-    <section class="max-w-5xl mx-auto bg-white p-8 rounded-lg shadow-lg mb-10 no-print">
-        <h3 class="text-2xl font-bold text-blue-700 mb-6 border-b-2 border-blue-200 pb-2">Enter Student Details and Grades</h3>
-        <form id="reportForm" class="space-y-6">
-            <input type="hidden" id="editIndex" value="-1">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label for="studentName" class="block text-base font-semibold text-gray-700">Student Name:</label>
-                    <input type="text" id="studentName" class="mt-2 p-4 w-full border rounded-md input-large" required>
-                </div>
-                <div>
-                    <label for="admissionNumber" class="block text-base font-semibold text-gray-700">Admission Number:</label>
-                    <input type="text" id="admissionNumber" class="mt-2 p-4 w-full border rounded-md input-large" required>
-                </div>
-                <div>
-                    <label for="class" class="block text-base font-semibold text-gray-700">Class:</label>
-                    <select id="class" class="mt-2 p-4 w-full border rounded-md input-large" required>
-                        <option value="">Select Class</option>
-                        <option value="Primary 1">Primary 1</option>
-                        <option value="Primary 2">Primary 2</option>
-                        <option value="Primary 3">Primary 3</option>
-                        <option value="Primary 4">Primary 4</option>
-                        <option value="Primary 5">Primary 5</option>
-                        <option value="Primary 6">Primary 6</option>
-                        <option value="JSS 1">JSS 1</option>
-                        <option value="JSS 2">JSS 2</option>
-                        <option value="JSS 3">JSS 3</option>
-                        <option value="SSS 1">SSS 1</option>
-                        <option value="SSS 2">SSS 2</option>
-                        <option value="SSS 3">SSS 3</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="term" class="block text-base font-semibold text-gray-700">Term:</label>
-                    <select id="term" class="mt-2 p-4 w-full border rounded-md input-large" required>
-                        <option value="">Select Term</option>
-                        <option value="First Term">First Term</option>
-                        <option value="Second Term">Second Term</option>
-                        <option value="Third Term">Third Term</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="session" class="block text-base font-semibold text-gray-700">Academic Session:</label>
-                    <input type="text" id="session" class="mt-2 p-4 w-full border rounded-md input-large" placeholder="e.g., 2024/2025" required>
-                </div>
-                <div>
-                    <label for="overallPosition" class="block text-base font-semibold text-gray-700">Overall Position:</label>
-                    <input type="text" id="overallPosition" class="mt-2 p-4 w-full border rounded-md input-large" placeholder="e.g., 1st, 2nd, 3rd">
-                </div>
-                <div class="col-span-2">
-                    <label class="inline-flex items-center">
-                        <input type="checkbox" id="includePhoto" class="form-checkbox h-6 w-6 text-blue-600">
-                        <span class="ml-3 text-base font-semibold text-gray-700">Include Student Picture</span>
-                    </label>
-                    <input type="file" id="studentPhoto" class="mt-3 p-4 w-full border rounded-md input-large hidden" accept="image/jpeg,image/png">
-                </div>
-            </div>
-
-            <div id="thirdTermInputs" class="hidden space-y-6 border-t-2 border-blue-200 pt-6">
-                <h4 class="text-lg font-semibold text-blue-700 mb-4">Third Term Cumulative Scores</h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="firstTermTotal" class="block text-base font-semibold text-gray-700">First Term Total Score:</label>
-                        <input type="number" id="firstTermTotal" class="mt-2 p-4 w-full border rounded-md input-large" min="0" placeholder="Enter First Term Total">
-                    </div>
-                    <div>
-                        <label for="firstTermAverage" class="block text-base font-semibold text-gray-700">First Term Average Score:</label>
-                        <input type="number" id="firstTermAverage" class="mt-2 p-4 w-full border rounded-md input-large" min="0" step="0.01" placeholder="Enter First Term Average">
-                    </div>
-                    <div>
-                        <label for="secondTermTotal" class="block text-base font-semibold text-gray-700">Second Term Total Score:</label>
-                        <input type="number" id="secondTermTotal" class="mt-2 p-4 w-full border rounded-md input-large" min="0" placeholder="Enter Second Term Total">
-                    </div>
-                    <div>
-                        <label for="secondTermAverage" class="block text-base font-semibold text-gray-700">Second Term Average Score:</label>
-                        <input type="number" id="secondTermAverage" class="mt-2 p-4 w-full border rounded-md input-large" min="0" step="0.01" placeholder="Enter Second Term Average">
-                    </div>
-                </div>
-            </div>
-
-            <div class="border-t-2 border-blue-200 pt-6">
-                <label id="subjectLabel" class="block text-base font-semibold text-gray-700">Subject Scores</label>
-                <div id="subjects" class="space-y-4 mt-3">
-                    <div class="subject-row flex flex-wrap gap-3"></div>
-                </div>
-                <button type="button" id="addSubject" class="mt-4 bg-blue-500 text-white px-5 py-2.5 rounded-md hover:bg-blue-600">Add Subject</button>
-            </div>
-
-            <div class="relative border-t-2 border-blue-200 pt-6">
-                <label for="teacherRemarks" class="block text-base font-semibold text-gray-700">Teacher's Remarks:</label>
-                <textarea id="teacherRemarks" class="mt-2 p-4 w-full border rounded-md input-large h-28"></textarea>
-                <button type="button" id="suggestTeacherRemark" class="mt-3 bg-blue-300 text-white px-4 py-2 rounded-md hover:bg-blue-400 text-sm">Suggest Remark</button>
-            </div>
-            <div class="relative">
-                <label for="principalRemarks" class="block text-base font-semibold text-gray-700">Principal's Remarks:</label>
-                <textarea id="principalRemarks" class="mt-2 p-4 w-full border rounded-md input-large h-28"></textarea>
-                <button type="button" id="suggestPrincipalRemark" class="mt-3 bg-blue-300 text-white px-4 py-2 rounded-md hover:bg-blue-400 text-sm">Suggest Remark</button>
-            </div>
-
-            <div class="flex justify-end space-x-4 pt-6">
-                <button type="submit" class="bg-green-500 text-white px-5 py-2.5 rounded-md hover:bg-green-600">Generate Report Card</button>
-                <button type="button" id="clearForm" class="bg-gray-500 text-white px-5 py-2.5 rounded-md hover:bg-gray-600">Clear Form</button>
-            </div>
+    <div class="form-container">
+        <h2>School Report Card Generator</h2>
+        <form id="reportForm">
+            <label>School Name: <input type="text" id="schoolName" placeholder="Enter School Name" required></label><br><br>
+            <label>School Address: <input type="text" id="schoolAddress" placeholder="Enter School Address" required></label><br><br>
+            <label>Contact Number: <input type="text" id="contactNumber" placeholder="Enter Contact Number" required></label><br><br>
+            <label>School Logo: <input type="file" id="logoInput" accept="image/*"></label><br><br>
+            <label>Watermark Background: <input type="file" id="watermarkInput" accept="image/*"></label><br><br>
+            <label>Background Color: <input type="color" id="backgroundColor" value="#ffffff"></label><br><br>
+            <label>Background Opacity: <input type="range" id="backgroundOpacity" min="0.1" max="1.0" step="0.1" value="1.0"></label><br><br>
+            <label>Font: 
+                <select id="fontSelect">
+                    <option value="Helvetica">Helvetica</option>
+                    <option value="Arial">Arial</option>
+                    <option value="Times New Roman">Times New Roman</option>
+                    <option value="Georgia">Georgia</option>
+                </select>
+            </label><br><br>
+            <label>Text Color: <input type="color" id="textColor" value="#2c3e50"></label><br><br>
+            <label>Student Photo Background Color: <input type="color" id="photoBackgroundColor" value="#f9fafb"></label><br><br>
+            <label>Student Name: <input type="text" id="studentName" required></label><br><br>
+            <label>Admission Number: <input type="text" id="admissionNumber" required></label><br><br>
+            <label>Sex: 
+                <select id="studentSex" required>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+            </label><br><br>
+            <label>Class: 
+                <select id="classSelect" required>
+                    <option value="Basic 1">Basic 1</option>
+                    <option value="Basic 2">Basic 2</option>
+                    <option value="Basic 3">Basic 3</option>
+                    <option value="Basic 4">Basic 4</option>
+                    <option value="Basic 5">Basic 5</option>
+                    <option value="Basic 6">Basic 6</option>
+                    <option value="JSS 1">JSS 1</option>
+                    <option value="JSS 2">JSS 2</option>
+                    <option value="JSS 3">JSS 3</option>
+                    <option value="SS 1">SS 1</option>
+                    <option value="SS 2">SS 2</option>
+                    <option value="SS 3">SS 3</option>
+                </select>
+            </label><br><br>
+            <label>Term: 
+                <select id="termSelect" required>
+                    <option value="First">First Term</option>
+                    <option value="Second">Second Term</option>
+                    <option value="Third">Third Term</option>
+                </select>
+            </label><br><br>
+            <label>Student Photo: <input type="file" id="photoInput" accept="image/*"></label>
+            <label>Photo Position: 
+                <select id="photoPosition">
+                    <option value="left">Left</option>
+                    <option value="right">Right</option>
+                </select>
+            </label><br><br>
+            <label>Position: <input type="text" id="positionInput" required></label><br><br>
+            <label>School Opens: <input type="date" id="schoolOpens" required></label><br><br>
+            <label>School Closes: <input type="date" id="schoolCloses" required></label><br><br>
+            <label>Reopen Date: <input type="date" id="reopenDate" required></label><br><br>
+            <label>No. of Times Student Present: <input type="number" id="studentPresentCount" min="0" required></label><br><br>
+            <label>Teacher's Remark: <textarea id="teacherRemark"></textarea></label><br><br>
+            <h3>Subject Scores</h3>
+            <div id="subjectInputs"></div>
+            <button type="button" onclick="addSubject()">Add Subject</button>
+            <button type="button" onclick="previewReport()">Preview Report</button>
+            <button type="button" onclick="exportPDF()">Export to PDF</button>
         </form>
-    </section>
-
-    <section id="reportCard" class="max-w-5xl mx-auto report-card">
-        <header class="report-card-header text-center">
-            <img src="tom.png" alt="School Logo" class="logo mb-6">
-               <h1 class="text-3xl font-bold text-blue-800">Revival Agent International School</h1>
-              <p class="text-sm text-gray-600 mt-3">123 AFTER CHIEF PALACE PAZE, KUBWA, ABUJA. | Phone: +234 813 811 0476</p>
-<img id="reportStudentPhoto" class="student-photo" alt="Student Photo">
-            <h2 class="text-xl font-semibold text-blue-600 mt-4">Student Report Card</h2>
-        </header>
-        <div class="space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <p class="text-base"><strong>Student Name:</strong> <span id="reportStudentName">N/A</span></p>
-                <p class="text-base"><strong>Admission Number:</strong> <span id="reportAdmissionNumber">N/A</span></p>
-                <p class="text-base"><strong>Class:</strong> <span id="reportClass">N/A</span></p>
-                <p class="text-base"><strong>Term:</strong> <span id="reportTerm">N/A</span></p>
-                <p class="text-base"><strong>Academic Session:</strong> <span id="reportSession">N/A</span></p>
-            </div>
-            <h3 class="text-lg font-bold text-blue-700 border-b-2 border-blue-200 pb-2">Academic Performance</h3>
-            <table>
-                <thead id="gradesTableHead"></thead>
-                <tbody id="reportGrades">
-                    <tr><td colspan="8" class="text-center">No grades entered yet</td></tr>
-                </tbody>
-            </table>
-            <div class="summary">
-                <p class="text-base"><strong>Overall Total Score:</strong> <span id="overallTotal">N/A</span></p>
-                <p class="text-base"><strong>Overall Average Score:</strong> <span id="overallAverage">N/A</span></p>
-                <p class="text-base"><strong>Overall Position:</strong> <span id="overallPosition">N/A</span></p>
-                <p class="text-base"><strong>Cumulative Total (Third Term):</strong> <span id="cumulativeTotal">N/A</span></p>
-                <p class="text-base"><strong>Cumulative Average (Third Term):</strong> <span id="cumulativeAverage">N/A</span></p>
-            </div>
-            <div class="remarks">
-                <p class="text-base"><strong>Teacher's Remarks:</strong> <span id="reportTeacherRemarks">N/A</span></p>
-                <p class="text-base"><strong>Principal's Remarks:</strong> <span id="reportPrincipalRemarks">__________________________</span></p>
-            </div>
-            <div class="signature">
-                <div>
-                    <p>__________________________</p>
-                    <p>Class Teacher's Signature</p>
-                </div>
-                <div>
-                    <p>__________________________</p>
-                    <p>Principal's Signature</p>
-                </div>
+    </div>
+    <div class="preview-container" id="previewOutput" style="display: none;">
+        <div class="background-layer" id="previewBackgroundLayer"></div>
+        <div class="header-container">
+            <div id="previewLogoContainer" class="logo-container"></div>
+            <h2 id="previewSchoolName" class="school-name"></h2>
+            <div class="school-info">
+                <p id="previewSchoolAddress"></p>
+                <p id="previewContactNumber"></p>
+                <p class="report-title">STUDENT REPORT CARD</p>
             </div>
         </div>
-        <div class="flex justify-end space-x-4 mt-6 no-print">
-            <button id="printReport" class="bg-blue-500 text-white px-5 py-2.5 rounded-md hover:bg-blue-600">Print Report Card</button>
-            <button id="saveReport" class="bg-green-500 text-white px-5 py-2.5 rounded-md hover:bg-green-600">Save Report Card</button>
-            <button id="shareReport" class="bg-purple-500 text-white px-5 py-2.5 rounded-md hover:bg-purple-600">Share Report Card</button>
+        <div class="student-details">
+            <div id="previewPhotoContainer" class="photo-container"></div>
+            <div>
+                <p class="student-name"><strong>Student:</strong> <span id="previewStudentName"></span></p>
+                <p class="admission-number"><strong>Admission Number:</strong> <span id="previewAdmissionNumber"></span></p>
+                <p><strong>Sex:</strong> <span id="previewStudentSex"></span></p>
+                <p><strong>Class:</strong> <span id="previewClass"></span></p>
+                <p><strong>Term:</strong> <span id="previewTerm"></span></p>
+                <p><strong>Position:</strong> <span id="previewPosition"></span></p>
+            </div>
         </div>
-    </section>
-
-    <section class="max-w-5xl mx-auto bg-white p-8 rounded-lg shadow-lg no-print mt-10">
-        <h3 class="text-2xl font-bold text-blue-700 mb-6 border-b-2 border-blue-200 pb-2">Saved Report Cards (Local Storage)</h3>
-        <p class="text-sm text-gray-600 mb-6">Note: Data saved here is only on *this browser and device*. For permanent storage, a backend system is required.</p>
-        <div id="savedReports" class="space-y-4">No saved reports yet</div>
-    </section>
+        <div class="school-info">
+            <p><strong>School Opens:</strong> <span id="previewSchoolOpens"></span></p>
+            <p><strong>School Closes:</strong> <span id="previewSchoolCloses"></span></p>
+            <p><strong>Reopen Date:</strong> <span id="previewReopenDate"></span></p>
+            <p><strong>No. of Times School Opens:</strong> <span id="previewSchoolOpenCount"></span></p>
+            <p><strong>No. of Times Student Present:</strong> <span id="previewStudentPresentCount"></span></p>
+            <p><strong>Average Attendance:</strong> <span id="previewAverageAttendance"></span>%</p>
+        </div>
+        <table id="previewTable">
+            <thead id="previewTableHead"></thead>
+            <tbody id="previewTableBody"></tbody>
+        </table>
+        <div class="grade-summary">
+            <p><strong>Cumulative Total:</strong> <span id="previewCumulativeTotal"></span></p>
+            <p><strong>Cumulative Average:</strong> <span id="previewCumulativeAverage"></span></p>
+            <p><strong>Overall Grade:</strong> <span id="previewOverallGrade"></span></p>
+        </div>
+        <div class="remarks">
+            <p><strong>Teacher's Remark:</strong> <span id="previewTeacherRemark"></span></p>
+            <p><strong>Head Teacher's Remark:</strong> <span id="previewHeadTeacherRemark">——————</span></p>
+        </div>
+        <div class="student-title">
+            <p><strong>Student Title:</strong> <span id="previewStudentTitle"></span></p>
+        </div>
+        <button type="button" onclick="saveReport()">Save Report</button>
+        <button type="button" onclick="document.getElementById('previewOutput').style.display = 'none'">Edit Report</button>
+    </div>
+    <div class="report-container" id="reportOutput" style="display: none;">
+        <div class="background-layer" id="reportBackgroundLayer"></div>
+        <div class="header-container">
+            <div id="reportLogoContainer" class="logo-container"></div>
+            <h2 id="reportSchoolName" class="school-name"></h2>
+            <div class="school-info">
+                <p id="reportSchoolAddress"></p>
+                <p id="reportContactNumber"></p>
+                <p class="report-title">STUDENT REPORT CARD</p>
+            </div>
+        </div>
+        <div class="student-details">
+            <div id="reportPhotoContainer" class="photo-container"></div>
+            <div>
+                <p class="student-name"><strong>Student:</strong> <span id="reportStudentName"></span></p>
+                <p class="admission-number"><strong>Admission Number:</strong> <span id="reportAdmissionNumber"></span></p>
+                <p><strong>Sex:</strong> <span id="reportStudentSex"></span></p>
+                <p><strong>Class:</strong> <span id="reportClass"></span></p>
+                <p><strong>Term:</strong> <span id="reportTerm"></span></p>
+                <p><strong>Position:</strong> <span id="reportPosition"></span></p>
+            </div>
+        </div>
+        <div class="school-info">
+            <p><strong>School Opens:</strong> <span id="reportSchoolOpens"></span></p>
+            <p><strong>School Closes:</strong> <span id="reportSchoolCloses"></span></p>
+            <p><strong>Reopen Date:</strong> <span id="reportReopenDate"></span></p>
+            <p><strong>No. of Times School Opens:</strong> <span id="reportSchoolOpenCount"></span></p>
+            <p><strong>No. of Times Student Present:</strong> <span id="reportStudentPresentCount"></span></p>
+            <p><strong>Average Attendance:</strong> <span id="reportAverageAttendance"></span>%</p>
+        </div>
+        <table id="reportTable">
+            <thead id="tableHead"></thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+        <div class="grade-summary">
+            <p><strong>Cumulative Total:</strong> <span id="reportCumulativeTotal"></span></p>
+            <p><strong>Cumulative Average:</strong> <span id="reportCumulativeAverage"></span></p>
+            <p><strong>Overall Grade:</strong> <span id="reportOverallGrade"></span></p>
+        </div>
+        <div class="remarks">
+            <p><strong>Teacher's Remark:</strong> <span id="reportTeacherRemark"></span></p>
+            <p><strong>Head Teacher's Remark:</strong> <span id="reportHeadTeacherRemark">——————</span></p>
+        </div>
+        <div class="student-title">
+            <p><strong>Student Title:</strong> <span id="reportStudentTitle"></span></p>
+        </div>
+    </div>
 
     <script>
-        function getGrade(total) {
-            if (total >= 70) return 'A';
-            if (total >= 60) return 'B';
-            if (total >= 50) return 'C';
-            if (total >= 45) return 'D';
-            if (total >= 40) return 'E';
+        const { jsPDF } = window.jspdf;
+        let subjects = [];
+        let savedReports = JSON.parse(localStorage.getItem('reports')) || [];
+
+        function addSubject() {
+            const container = document.getElementById('subjectInputs');
+            const div = document.createElement('div');
+            const classType = document.getElementById('classSelect').value;
+            const term = document.getElementById('termSelect').value;
+            let scoreFields = '';
+            if (term === 'First' || term === 'Second') {
+                const caFields = classType.startsWith('Basic') ? `
+                    <input type="number" class="ca1" min="0" max="10" placeholder="CA1 (10)" required>
+                    <input type="number" class="ca2" min="0" max="10" placeholder="CA2 (10)" required>
+                    <input type="number" class="ca3" min="0" max="10" placeholder="CA3 (10)" required>
+                    <input type="number" class="ca4" min="0" max="10" placeholder="CA4 (10)" required>
+                    <input type="number" class="exam" min="0" max="60" placeholder="Exam (60)" required>
+                ` : `
+                    <input type="number" class="ca1" min="0" max="10" placeholder="CA1 (10)" required>
+                    <input type="number" class="ca2" min="0" max="10" placeholder="CA2 (10)" required>
+                    <input type="number" class="ca3" min="0" max="10" placeholder="CA3 (10)" required>
+                    <input type="number" class="exam" min="0" max="70" placeholder="Exam (70)" required>
+                `;
+                scoreFields = `<label>${term} Term: ${caFields}</label>`;
+            } else {
+                const caFields = classType.startsWith('Basic') ? `
+                    <input type="number" class="ca1" min="0" max="10" placeholder="CA1 (10)" required>
+                    <input type="number" class="ca2" min="0" max="10" placeholder="CA2 (10)" required>
+                    <input type="number" class="ca3" min="0" max="10" placeholder="CA3 (10)" required>
+                    <input type="number" class="ca4" min="0" max="10" placeholder="CA4 (10)" required>
+                    <input type="number" class="exam" min="0" max="60" placeholder="Exam (60)" required>
+                ` : `
+                    <input type="number" class="ca1" min="0" max="10" placeholder="CA1 (10)" required>
+                    <input type="number" class="ca2" min="0" max="10" placeholder="CA2 (10)" required>
+                    <input type="number" class="ca3" min="0" max="10" placeholder="CA3 (10)" required>
+                    <input type="number" class="exam" min="0" max="70" placeholder="Exam (70)" required>
+                `;
+                scoreFields = `
+                    <label>First Term Total: <input type="number" class="firstTermTotal" min="0" max="100" required></label>
+                    <label>Second Term Total: <input type="number" class="secondTermTotal" min="0" max="100" required></label>
+                    <label>Third Term: ${caFields}</label>
+                `;
+            }
+            div.innerHTML = `
+                <label>Subject: <input type="text" class="subjectName" required></label>
+                <label>Position: <input type="text" class="subjectPosition" required></label>
+                ${scoreFields}
+                <button type="button" onclick="this.parentElement.remove()">Remove</button><br><br>
+            `;
+            container.appendChild(div);
+        }
+
+        function calculateGrade(score) {
+            if (score >= 70) return 'A';
+            if (score >= 60) return 'B';
+            if (score >= 50) return 'C';
+            if (score >= 40) return 'D';
             return 'F';
         }
 
-        function isSecondaryClass(className) {
-            return ['JSS 1', 'JSS 2', 'JSS 3', 'SSS 1', 'SSS 2', 'SSS 3'].includes(className);
+        function calculateSchoolOpenDays(startDate, endDate) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            let count = 0;
+            for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+                if (d.getDay() !== 0 && d.getDay() !== 6) count++; // Exclude weekends
+            }
+            return count;
         }
 
-        function suggestRemark(average, role) {
-            if (average >= 80) {
-                return role === 'teacher'
-                    ? 'Excellent performance, keep up the outstanding effort!'
-                    : 'Remarkable achievement, a true asset to the school!';
-            } else if (average >= 60) {
-                return role === 'teacher'
-                    ? 'Good work, continue to strive for excellence.'
-                    : 'Commendable effort, maintain your focus and progress.';
-            } else if (average >= 40) {
-                return role === 'teacher'
-                    ? 'Fair performance, more effort is needed to improve.'
-                    : 'Satisfactory results, increased dedication is recommended.';
+        function hexToRgb(hex) {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return [r, g, b];
+        }
+
+        function generateStudentTitle(subjects, term) {
+            const scienceSubjects = ['mathematics', 'physics', 'chemistry', 'biology', 'integrated science'];
+            const artsSubjects = ['english', 'literature', 'history', 'social studies', 'geography'];
+            const vocationalSubjects = ['technical drawing', 'home economics', 'agricultural science'];
+
+            const topScore = Math.max(...subjects.map(s => term === 'Third' ? s.overallTotal : s.termTotal));
+            const topSubjects = subjects.filter(s => (term === 'Third' ? s.overallTotal : s.termTotal) === topScore);
+
+            if (topScore < 70) return 'Emerging Talent';
+
+            const isScience = topSubjects.every(s => scienceSubjects.includes(s.subjectName.toLowerCase()));
+            const isArts = topSubjects.every(s => artsSubjects.includes(s.subjectName.toLowerCase()));
+            const isVocational = topSubjects.every(s => vocationalSubjects.includes(s.subjectName.toLowerCase()));
+
+            if (isScience) {
+                return topSubjects.length > 1 ? 'Master of Sciences' : 'Science Prodigy';
+            } else if (isArts) {
+                return topSubjects.length > 1 ? 'Humanities Hero' : 'Literary Luminary';
+            } else if (isVocational) {
+                return topSubjects.length > 1 ? 'Creative Craftsman' : 'Technical Titan';
+            } else if (topSubjects.length > 2) {
+                return 'Academic Star';
             } else {
-                return role === 'teacher'
-                    ? 'Needs significant improvement, please seek extra support.'
-                    : 'Urgent improvement required, consult with teachers for guidance.';
+                return 'Scholar Supreme';
             }
         }
 
-        function updateSubjectInputs() {
-            const classSelect = document.getElementById('class');
-            const subjectLabel = document.getElementById('subjectLabel');
-            const subjectsDiv = document.getElementById('subjects');
-            const gradesTableHead = document.getElementById('gradesTableHead');
+        function generateReportData() {
+            const schoolName = document.getElementById('schoolName').value;
+            const schoolAddress = document.getElementById('schoolAddress').value;
+            const contactNumber = document.getElementById('contactNumber').value;
+            const font = document.getElementById('fontSelect').value;
+            const textColor = document.getElementById('textColor').value;
+            const photoBackgroundColor = document.getElementById('photoBackgroundColor').value;
+            const backgroundOpacity = parseFloat(document.getElementById('backgroundOpacity').value);
+            const studentName = document.getElementById('studentName').value;
+            const admissionNumber = document.getElementById('admissionNumber').value;
+            const studentSex = document.getElementById('studentSex').value;
+            const classType = document.getElementById('classSelect').value;
+            const term = document.getElementById('termSelect').value;
+            const position = document.getElementById('positionInput').value;
+            const schoolOpens = document.getElementById('schoolOpens').value;
+            const schoolCloses = document.getElementById('schoolCloses').value;
+            const reopenDate = document.getElementById('reopenDate').value;
+            const studentPresentCount = parseInt(document.getElementById('studentPresentCount').value) || 0;
+            const teacherRemark = document.getElementById('teacherRemark').value;
+            const photo = document.getElementById('photoInput').files[0];
+            const logo = document.getElementById('logoInput').files[0];
+            const watermark = document.getElementById('watermarkInput').files[0];
+            const backgroundColor = document.getElementById('backgroundColor').value;
+            const photoPosition = document.getElementById('photoPosition').value;
 
-            if (!classSelect || !subjectLabel || !subjectsDiv || !gradesTableHead) {
-                console.error('One or more required elements are missing:', {
-                    classSelect: !!classSelect,
-                    subjectLabel: !!subjectLabel,
-                    subjectsDiv: !!subjectsDiv,
-                    gradesTableHead: !!gradesTableHead
+            if (!schoolName || !schoolAddress || !contactNumber || !studentName || !admissionNumber || !studentSex || !classType || !term || !position || !schoolOpens || !schoolCloses || !reopenDate || !studentPresentCount) {
+                alert('Please fill all required fields.');
+                return null;
+            }
+
+            const subjectInputs = document.querySelectorAll('#subjectInputs > div');
+            if (subjectInputs.length === 0) {
+                alert('Please add at least one subject.');
+                return null;
+            }
+
+            for (const input of subjectInputs) {
+                const subjectName = input.querySelector('.subjectName').value;
+                const subjectPosition = input.querySelector('.subjectPosition').value;
+                if (!subjectName || !subjectPosition) {
+                    alert('Please fill all subject fields.');
+                    return null;
+                }
+                if (term === 'Third') {
+                    const firstTermTotal = input.querySelector('.firstTermTotal')?.value;
+                    const secondTermTotal = input.querySelector('.secondTermTotal')?.value;
+                    if (!firstTermTotal || !secondTermTotal) {
+                        alert('Please fill First and Second Term Totals for Third Term.');
+                        return null;
+                    }
+                }
+            }
+
+            const schoolOpenCount = calculateSchoolOpenDays(schoolOpens, schoolCloses);
+            const averageAttendance = schoolOpenCount > 0 ? (studentPresentCount / schoolOpenCount * 100).toFixed(2) : 0;
+
+            subjects = [];
+            let cumulativeTotal = 0;
+            let subjectCount = 0;
+            subjectInputs.forEach(input => {
+                const subjectName = input.querySelector('.subjectName').value;
+                const subjectPosition = input.querySelector('.subjectPosition').value;
+                let ca1 = 0, ca2 = 0, ca3 = 0, ca4 = 0, exam = 0, termTotal = 0, firstTermTotal = 0, secondTermTotal = 0, overallTotal = 0, average = 0;
+                if (term === 'First' || term === 'Second') {
+                    ca1 = parseInt(input.querySelector('.ca1')?.value) || 0;
+                    ca2 = parseInt(input.querySelector('.ca2')?.value) || 0;
+                    ca3 = parseInt(input.querySelector('.ca3')?.value) || 0;
+                    ca4 = classType.startsWith('Basic') ? parseInt(input.querySelector('.ca4')?.value) || 0 : 0;
+                    exam = parseInt(input.querySelector('.exam')?.value) || 0;
+                    termTotal = classType.startsWith('Basic') ? ca1 + ca2 + ca3 + ca4 + exam : ca1 + ca2 + ca3 + exam;
+                    if (term === 'First') firstTermTotal = termTotal;
+                    else secondTermTotal = termTotal;
+                } else {
+                    ca1 = parseInt(input.querySelector('.ca1')?.value) || 0;
+                    ca2 = parseInt(input.querySelector('.ca2')?.value) || 0;
+                    ca3 = parseInt(input.querySelector('.ca3')?.value) || 0;
+                    ca4 = classType.startsWith('Basic') ? parseInt(input.querySelector('.ca4')?.value) || 0 : 0;
+                    exam = parseInt(input.querySelector('.exam')?.value) || 0;
+                    firstTermTotal = parseInt(input.querySelector('.firstTermTotal')?.value) || 0;
+                    secondTermTotal = parseInt(input.querySelector('.secondTermTotal')?.value) || 0;
+                    termTotal = classType.startsWith('Basic') ? ca1 + ca2 + ca3 + ca4 + exam : ca1 + ca2 + ca3 + exam;
+                    overallTotal = firstTermTotal + secondTermTotal + termTotal;
+                    average = overallTotal / 3;
+                }
+                const grade = term === 'Third' ? calculateGrade(overallTotal) : calculateGrade(termTotal);
+                subjects.push({ 
+                    subjectName, subjectPosition, 
+                    ca1, ca2, ca3, ca4, exam, 
+                    firstTermTotal, secondTermTotal, thirdTermTotal: term === 'Third' ? termTotal : 0, 
+                    termTotal, overallTotal, average, grade 
                 });
-                return;
+                cumulativeTotal += term === 'Third' ? overallTotal : termTotal;
+                subjectCount++;
+            });
+
+            const cumulativeAverage = subjectCount > 0 ? cumulativeTotal / subjectCount : 0;
+            const overallGrade = calculateGrade(cumulativeAverage);
+            const studentTitle = generateStudentTitle(subjects, term);
+
+            return {
+                schoolName, schoolAddress, contactNumber, font, textColor, photoBackgroundColor, backgroundOpacity,
+                studentName, admissionNumber, studentSex, classType, term, position,
+                schoolOpens, schoolCloses, reopenDate, schoolOpenCount, studentPresentCount, averageAttendance,
+                teacherRemark, photo, logo, watermark, backgroundColor, photoPosition,
+                subjects, cumulativeTotal, cumulativeAverage, overallGrade, studentTitle
+            };
+        }
+
+        function renderReport(containerPrefix, data) {
+            const { schoolName, schoolAddress, contactNumber, font, textColor, photoBackgroundColor, backgroundOpacity,
+                    studentName, admissionNumber, studentSex, classType, term, position,
+                    schoolOpens, schoolCloses, reopenDate, schoolOpenCount, studentPresentCount, averageAttendance,
+                    teacherRemark, photo, logo, photoPosition, subjects, cumulativeTotal, cumulativeAverage, overallGrade, studentTitle } = data;
+
+            // Update font and text color
+            const output = document.getElementById(`${containerPrefix}Output`);
+            output.style.fontFamily = font;
+            output.style.color = textColor;
+
+            // Update background layer
+            const backgroundLayer = document.getElementById(`${containerPrefix}BackgroundLayer`);
+            backgroundLayer.style.backgroundColor = backgroundColor;
+            backgroundLayer.style.opacity = backgroundOpacity;
+
+            // Update report output
+            output.style.display = 'block';
+            document.getElementById(`${containerPrefix}SchoolName`).textContent = schoolName || 'School Name';
+            document.getElementById(`${containerPrefix}SchoolAddress`).textContent = schoolAddress || 'N/A';
+            document.getElementById(`${containerPrefix}ContactNumber`).textContent = contactNumber || 'N/A';
+            document.getElementById(`${containerPrefix}StudentName`).textContent = studentName;
+            document.getElementById(`${containerPrefix}AdmissionNumber`).textContent = admissionNumber || 'N/A';
+            document.getElementById(`${containerPrefix}StudentSex`).textContent = studentSex;
+            document.getElementById(`${containerPrefix}Class`).textContent = classType;
+            document.getElementById(`${containerPrefix}Term`).textContent = term;
+            document.getElementById(`${containerPrefix}Position`).textContent = position;
+            document.getElementById(`${containerPrefix}SchoolOpens`).textContent = schoolOpens || 'N/A';
+            document.getElementById(`${containerPrefix}SchoolCloses`).textContent = schoolCloses || 'N/A';
+            document.getElementById(`${containerPrefix}ReopenDate`).textContent = reopenDate || 'N/A';
+            document.getElementById(`${containerPrefix}SchoolOpenCount`).textContent = schoolOpenCount || 'N/A';
+            document.getElementById(`${containerPrefix}StudentPresentCount`).textContent = studentPresentCount || 'N/A';
+            document.getElementById(`${containerPrefix}AverageAttendance`).textContent = averageAttendance || 'N/A';
+            document.getElementById(`${containerPrefix}TeacherRemark`).textContent = teacherRemark || 'N/A';
+            document.getElementById(`${containerPrefix}HeadTeacherRemark`).textContent = '——————';
+            document.getElementById(`${containerPrefix}CumulativeTotal`).textContent = cumulativeTotal.toFixed(2);
+            document.getElementById(`${containerPrefix}CumulativeAverage`).textContent = cumulativeAverage.toFixed(2);
+            document.getElementById(`${containerPrefix}OverallGrade`).textContent = overallGrade;
+            document.getElementById(`${containerPrefix}OverallGrade`).className = `grade-${overallGrade}`;
+            document.getElementById(`${containerPrefix}StudentTitle`).textContent = studentTitle;
+
+            // Logo handling
+            const logoContainer = document.getElementById(`${containerPrefix}LogoContainer`);
+            logoContainer.innerHTML = 'School Logo';
+            if (logo) {
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(logo);
+                logoContainer.innerHTML = '';
+                logoContainer.appendChild(img);
             }
 
-            const classValue = classSelect.value;
-            const isSecondary = isSecondaryClass(classValue);
-            const caCount = isSecondary ? 3 : 4;
-            const examMax = isSecondary ? 70 : 60;
-            subjectLabel.textContent = `Subject Scores (C.A: ${caCount} x 10 = ${caCount * 10}, Exam: ${examMax})`;
-
-            const existingRows = subjectsDiv.querySelectorAll('.subject-row');
-            existingRows.forEach(row => row.remove());
-
-            const newRow = document.createElement('div');
-            newRow.className = 'subject-row flex flex-wrap gap-3';
-            newRow.innerHTML = `
-                <input type="text" class="subject-name p-4 border rounded-md input-large" placeholder="Subject" required>
-                ${Array.from({ length: caCount }, (_, i) => `
-                    <input type="number" class="ca${i + 1} p-4 border rounded-md input-large" placeholder="C.A ${i + 1} (10)" min="0" max="10" required>
-                `).join('')}
-                <input type="number" class="exam p-4 border rounded-md input-large" placeholder="Exam (${examMax})" min="0" max="${examMax}" required>
-                <input type="text" class="position p-4 border rounded-md input-large" placeholder="Position" required>
-                <button type="button" class="remove-subject bg-red-500 text-white px-3 py-2 rounded-md hover:bg-red-600">Remove</button>
-            `;
-            subjectsDiv.appendChild(newRow);
-            const removeButton = newRow.querySelector('.remove-subject');
-            if (removeButton) {
-                removeButton.addEventListener('click', () => newRow.remove());
-            } else {
-                console.error('Remove button not found in new subject row');
+            // Photo handling
+            const photoContainer = document.getElementById(`${containerPrefix}PhotoContainer`);
+            photoContainer.innerHTML = '';
+            photoContainer.style.float = photoPosition;
+            photoContainer.style.backgroundColor = photoBackgroundColor;
+            if (photo) {
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(photo);
+                photoContainer.appendChild(img);
             }
 
-            gradesTableHead.innerHTML = `
+            // Table header
+            const tableHead = document.getElementById(`${containerPrefix}TableHead`);
+            tableHead.innerHTML = `
                 <tr>
-                    <th class="border p-3">Subject</th>
-                    ${Array.from({ length: caCount }, (_, i) => `<th class="border p-3">C.A ${i + 1} (10)</th>`).join('')}
-                    <th class="border p-3">Exam (${examMax})</th>
-                    <th class="border p-3">Total (100)</th>
-                    <th class="border p-3">Grade</th>
-                    <th class="border p-3">Position</th>
+                    <th>Subject</th>
+                    <th>Position</th>
+                    <th>CA1</th><th>CA2</th><th>CA3</th>
+                    ${classType.startsWith('Basic') ? '<th>CA4</th>' : ''}
+                    <th>Exam</th>
+                    <th>${term} Term</th>
+                    ${term === 'Third' ? '<th>First Term</th><th>Second Term</th><th>Total</th><th>Average</th>' : ''}
+                    <th>Grade</th>
                 </tr>
             `;
-            console.log('Updated subject inputs for class:', classValue);
+
+            // Table body
+            const tableBody = document.getElementById(`${containerPrefix}TableBody`);
+            tableBody.innerHTML = '';
+            subjects.forEach(subject => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${subject.subjectName}</td>
+                    <td>${subject.subjectPosition}</td>
+                    <td>${subject.ca1}</td>
+                    <td>${subject.ca2}</td>
+                    <td>${subject.ca3}</td>
+                    ${classType.startsWith('Basic') ? `<td>${subject.ca4}</td>` : ''}
+                    <td>${subject.exam}</td>
+                    <td>${subject.termTotal}</td>
+                    ${term === 'Third' ? `
+                        <td>${subject.firstTermTotal}</td>
+                        <td>${subject.secondTermTotal}</td>
+                        <td>${subject.overallTotal}</td>
+                        <td>${subject.average.toFixed(2)}</td>
+                    ` : ''}
+                    <td class="grade-${subject.grade}">${subject.grade}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            // Cumulative row for third term
+            if (term === 'Third') {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>Cumulative</strong></td>
+                    <td></td>
+                    <td></td><td></td><td></td>
+                    ${classType.startsWith('Basic') ? '<td></td>' : ''}
+                    <td></td><td></td>
+                    <td></td><td></td>
+                    <td><strong>${cumulativeTotal}</strong></td>
+                    <td><strong>${cumulativeAverage.toFixed(2)}</strong></td>
+                    <td></td>
+                `;
+                tableBody.appendChild(row);
+            }
         }
 
-        function populateFormWithReport(report, index) {
-            const elements = {
-                studentName: document.getElementById('studentName'),
-                admissionNumber: document.getElementById('admissionNumber'),
-                classSelect: document.getElementById('class'),
-                term: document.getElementById('term'),
-                session: document.getElementById('session'),
-                overallPosition: document.getElementById('overallPosition'),
-                teacherRemarks: document.getElementById('teacherRemarks'),
-                principalRemarks: document.getElementById('principalRemarks'),
-                firstTermTotal: document.getElementById('firstTermTotal'),
-                firstTermAverage: document.getElementById('firstTermAverage'),
-                secondTermTotal: document.getElementById('secondTermTotal'),
-                secondTermAverage: document.getElementById('secondTermAverage'),
-                subjectsDiv: document.getElementById('subjects'),
-                editIndex: document.getElementById('editIndex'),
-                includePhoto: document.getElementById('includePhoto'),
-                studentPhoto: document.getElementById('studentPhoto')
+        function previewReport() {
+            const data = generateReportData();
+            if (!data) return;
+            renderReport('preview', data);
+            document.getElementById('reportOutput').style.display = 'none';
+        }
+
+        function saveReport() {
+            const data = generateReportData();
+            if (!data) return;
+            savedReports.push(data);
+            localStorage.setItem('reports', JSON.stringify(savedReports));
+            alert('Report saved!');
+            document.getElementById('previewOutput').style.display = 'none';
+            renderReport('report', data);
+        }
+
+        async function exportPDF() {
+            const data = generateReportData();
+            if (!data) return;
+            const { schoolName, schoolAddress, contactNumber, font, textColor, photoBackgroundColor, backgroundOpacity,
+                    studentName, admissionNumber, studentSex, classType, term, position,
+                    schoolOpens, schoolCloses, reopenDate, schoolOpenCount, studentPresentCount, averageAttendance,
+                    teacherRemark, photo, logo, watermark, backgroundColor, photoPosition,
+                    subjects, cumulativeTotal, cumulativeAverage, overallGrade, studentTitle } = data;
+
+            const doc = new jsPDF({ format: 'a4' });
+            // Background color with opacity
+            if (backgroundColor && backgroundColor !== '#ffffff') {
+                doc.setFillColor(...hexToRgb(backgroundColor), backgroundOpacity);
+                doc.rect(0, 0, 210, 297, 'F');
+            }
+            // Watermark
+            if (watermark) {
+                const imgData = await new Promise(resolve => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.readAsDataURL(watermark);
+                });
+                doc.addImage(imgData, 'JPEG', 0, 0, 210, 297, '', 'NONE', 0.1);
+            }
+            // Set font and text color
+            doc.setFont(font.toLowerCase());
+            doc.setTextColor(...hexToRgb(textColor));
+            // Header
+            let y = 10;
+            if (logo) {
+                const imgData = await new Promise(resolve => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.readAsDataURL(logo);
+                });
+                doc.addImage(imgData, 'JPEG', 90, 10, 30, 30);
+                y = 45;
+            }
+            doc.setFontSize(18);
+            doc.text(schoolName || 'School Name', 105, y, { align: 'center' });
+            y += 10;
+            doc.setFontSize(11);
+            doc.text(schoolAddress || 'N/A', 105, y, { align: 'center' });
+            y += 4;
+            doc.text(contactNumber || 'N/A', 105, y, { align: 'center' });
+            y += 4;
+            doc.setFontSize(12);
+            doc.text('STUDENT REPORT CARD', 105, y, { align: 'center' });
+            doc.line(80, y + 1, 130, y + 1); // Underline
+            y += 6;
+            // Student details
+            doc.setFontSize(10);
+            doc.setFillColor(224, 231, 255); // Gradient start color
+            doc.rect(10, y, 190, 35, 'F'); // Background for student details
+            if (photo) {
+                doc.setFillColor(...hexToRgb(photoBackgroundColor));
+                doc.rect(photoPosition === 'left' ? 20 : 150, y + 5, 25, 25, 'F');
+                const imgData = await new Promise(resolve => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.readAsDataURL(photo);
+                });
+                doc.addImage(imgData, 'JPEG', photoPosition === 'left' ? 20 : 150, y + 5, 25, 25, '', 'NONE', 0.9);
+            }
+            doc.text(`Student: ${studentName}`, photoPosition === 'left' ? 50 : 20, y + 5);
+            doc.text(`Admission Number: ${admissionNumber}`, photoPosition === 'left' ? 50 : 20, y + 10);
+            doc.text(`Sex: ${studentSex}`, photoPosition === 'left' ? 50 : 20, y + 15);
+            doc.text(`Class: ${classType}`, photoPosition === 'left' ? 50 : 20, y + 20);
+            doc.text(`Term: ${term}`, photoPosition === 'left' ? 50 : 20, y + 25);
+            doc.text(`Position: ${position}`, photoPosition === 'left' ? 50 : 20, y + 30);
+            y += 35;
+            // School info
+            doc.text(`School Opens: ${schoolOpens || 'N/A'}`, 20, y);
+            y += 5;
+            doc.text(`School Closes: ${schoolCloses || 'N/A'}`, 20, y);
+            y += 5;
+            doc.text(`Reopen Date: ${reopenDate || 'N/A'}`, 20, y);
+            y += 5;
+            doc.text(`No. of Times School Opens: ${schoolOpenCount || 'N/A'}`, 20, y);
+            y += 5;
+            doc.text(`No. of Times Student Present: ${studentPresentCount || 'N/A'}`, 20, y);
+            y += 5;
+            doc.text(`Average Attendance: ${averageAttendance || 'N/A'}%`, 20, y);
+            y += 6;
+            // Table
+            const gradeColors = {
+                'A': [40, 167, 69],  // #28a745
+                'B': [0, 123, 255],  // #007bff
+                'C': [253, 126, 20], // #fd7e14
+                'D': [111, 66, 193], // #6f42c1
+                'F': [220, 53, 69]   // #dc3545
             };
-
-            if (Object.values(elements).some(el => !el)) {
-                console.error('One or more form elements are missing for populating report');
-                return;
+            const gradeColumnIndex = classType.startsWith('Basic') ? (term === 'Third' ? 11 : 7) : (term === 'Third' ? 10 : 6);
+            let tableData = subjects.map(subject => [
+                subject.subjectName,
+                subject.subjectPosition,
+                subject.ca1.toString(),
+                subject.ca2.toString(),
+                subject.ca3.toString(),
+                ...(classType.startsWith('Basic') ? [subject.ca4.toString()] : []),
+                subject.exam.toString(),
+                subject.termTotal.toString(),
+                ...(term === 'Third' ? [
+                    subject.firstTermTotal.toString(),
+                    subject.secondTermTotal.toString(),
+                    subject.overallTotal.toString(),
+                    subject.average.toFixed(2)
+                ] : []),
+                subject.grade
+            ]);
+            if (term === 'Third') {
+                tableData.push(['Cumulative', '', '', '', '', ...(classType.startsWith('Basic') ? [''] : []), '', '', '', cumulativeTotal.toString(), cumulativeAverage.toFixed(2), '']);
             }
-
-            elements.editIndex.value = index;
-            elements.studentName.value = report.studentName || '';
-            elements.admissionNumber.value = report.admissionNumber || '';
-            elements.classSelect.value = report.class || '';
-            elements.term.value = report.term || '';
-            elements.session.value = report.session || '';
-            elements.overallPosition.value = report.overallPosition || '';
-            elements.teacherRemarks.value = report.teacherRemarks || '';
-            elements.principalRemarks.value = report.principalRemarks === '__________________________' ? '' : report.principalRemarks || '';
-
-            elements.includePhoto.checked = !!report.studentPhoto;
-            elements.studentPhoto.classList.toggle('hidden', !report.studentPhoto);
-            if (report.studentPhoto) {
-                elements.studentPhoto.setAttribute('data-base64', report.studentPhoto);
-            } else {
-                elements.studentPhoto.removeAttribute('data-base64');
-                elements.studentPhoto.value = '';
-            }
-
-            updateSubjectInputs();
-
-            if (report.term === 'Third Term') {
-                const thirdTermInputs = document.getElementById('thirdTermInputs');
-                if (thirdTermInputs) {
-                    thirdTermInputs.classList.remove('hidden');
-                    elements.firstTermTotal.value = report.firstTermTotal || '';
-                    elements.firstTermAverage.value = report.firstTermAverage || '';
-                    elements.secondTermTotal.value = report.secondTermTotal || '';
-                    elements.secondTermAverage.value = report.secondTermAverage || '';
-                    ['firstTermTotal', 'firstTermAverage', 'secondTermTotal', 'secondTermAverage'].forEach(id => {
-                        const input = document.getElementById(id);
-                        if (input) input.setAttribute('required', '');
-                    });
-                }
-            }
-
-            elements.subjectsDiv.innerHTML = '';
-            const isSecondary = isSecondaryClass(report.class);
-            const caCount = isSecondary ? 3 : 4;
-            const examMax = isSecondary ? 70 : 60;
-
-            report.grades.forEach(grade => {
-                const newRow = document.createElement('div');
-                newRow.className = 'subject-row flex flex-wrap gap-3';
-                newRow.innerHTML = `
-                    <input type="text" class="subject-name p-4 border rounded-md input-large" placeholder="Subject" value="${grade.subjectName || ''}" required>
-                    ${Array.from({ length: caCount }, (_, i) => `
-                        <input type="number" class="ca${i + 1} p-4 border rounded-md input-large" placeholder="C.A ${i + 1} (10)" min="0" max="10" value="${grade.caScores[i] || ''}" required>
-                    `).join('')}
-                    <input type="number" class="exam p-4 border rounded-md input-large" placeholder="Exam (${examMax})" min="0" max="${examMax}" value="${grade.exam || ''}" required>
-                    <input type="text" class="position p-4 border rounded-md input-large" placeholder="Position" value="${grade.position || ''}" required>
-                    <button type="button" class="remove-subject bg-red-500 text-white px-3 py-2 rounded-md hover:bg-red-600">Remove</button>
-                `;
-                elements.subjectsDiv.appendChild(newRow);
-                const removeButton = newRow.querySelector('.remove-subject');
-                if (removeButton) {
-                    removeButton.addEventListener('click', () => newRow.remove());
-                }
+            doc.autoTable({
+                startY: y,
+                head: [[
+                    'Subject', 'Position', 'CA1', 'CA2', 'CA3',
+                    ...(classType.startsWith('Basic') ? ['CA4'] : []),
+                    'Exam', `${term} Term`,
+                    ...(term === 'Third' ? ['First Term', 'Second Term', 'Total', 'Average'] : []),
+                    'Grade'
+                ]],
+                body: tableData,
+                theme: 'grid',
+                headStyles: { fillColor: [44, 62, 80], fontSize: 8, textColor: [255, 255, 255] },
+                styles: { fontSize: 8, cellPadding: 1.5, overflow: 'linebreak', font: font.toLowerCase(), textColor: hexToRgb(textColor) },
+                columnStyles: { 
+                    0: { cellWidth: 25 },
+                    [gradeColumnIndex]: { 
+                        cellFilter: function (value) {
+                            return value;
+                        },
+                        textColor: function (rowData) {
+                            return gradeColors[rowData[gradeColumnIndex]] || hexToRgb(textColor);
+                        }
+                    }
+                },
+                margin: { top: 10, bottom: 40, left: 10, right: 10 }
             });
+            // Summary and remarks
+            y = doc.lastAutoTable.finalY + 6;
+            doc.setFontSize(10);
+            doc.setTextColor(...hexToRgb(textColor));
+            doc.text(`Cumulative Total: ${cumulativeTotal.toFixed(2)}`, 20, y);
+            y += 5;
+            doc.text(`Cumulative Average: ${cumulativeAverage.toFixed(2)}`, 20, y);
+            y += 5;
+            doc.setTextColor(...(gradeColors[overallGrade] || hexToRgb(textColor)));
+            doc.text(`Overall Grade: ${overallGrade}`, 20, y);
+            y += 5;
+            doc.setTextColor(...hexToRgb(textColor));
+            doc.text(`Teacher's Remark: ${teacherRemark || 'N/A'}`, 20, y);
+            y += 5;
+            doc.text(`Head Teacher's Remark: ——————`, 20, y);
+            y += 5;
+            doc.setFontSize(12);
+            doc.setFont(font.toLowerCase(), 'italic');
+            doc.text(`Student Title: ${studentTitle}`, 105, y, { align: 'center' });
+            doc.save('report_card.pdf');
 
-            console.log('Form populated with report at index:', index);
+            renderReport('report', data);
         }
 
-        function shareReport(report) {
-            try {
-                const studentName = report.studentName || 'unknown';
-                const admissionNumber = report.admissionNumber || 'unknown';
-                const term = report.term || 'unknown';
-                const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-                const filename = `report_card_${studentName}_${admissionNumber}_${term}_${timestamp}.json`;
-                const jsonStr = JSON.stringify(report, null, 2);
-                const blob = new Blob([jsonStr], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = filename;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                URL.revokeObjectURL(url);
-                console.log('Shared report:', filename);
-            } catch (error) {
-                console.error('Error sharing report:', error);
-                alert('An error occurred while sharing the report. Please check the console for details.');
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('DOM fully loaded, initializing...');
-
-            const classSelect = document.getElementById('class');
-            const termSelect = document.getElementById('term');
-            const addSubjectButton = document.getElementById('addSubject');
-            const suggestTeacherRemarkButton = document.getElementById('suggestTeacherRemark');
-            const suggestPrincipalRemarkButton = document.getElementById('suggestPrincipalRemark');
-            const clearFormButton = document.getElementById('clearForm');
-            const reportForm = document.getElementById('reportForm');
-            const printReportButton = document.getElementById('printReport');
-            const saveReportButton = document.getElementById('saveReport');
-            const shareReportButton = document.getElementById('shareReport');
-            const includePhotoCheckbox = document.getElementById('includePhoto');
-            const studentPhotoInput = document.getElementById('studentPhoto');
-
-            if (!classSelect || !termSelect || !addSubjectButton || !suggestTeacherRemarkButton || !suggestPrincipalRemarkButton || !clearFormButton || !reportForm || !printReportButton || !saveReportButton || !shareReportButton || !includePhotoCheckbox || !studentPhotoInput) {
-                console.error('One or more critical elements are missing:', {
-                    classSelect: !!classSelect,
-                    termSelect: !!termSelect,
-                    addSubjectButton: !!addSubjectButton,
-                    suggestTeacherRemarkButton: !!suggestTeacherRemarkButton,
-                    suggestPrincipalRemarkButton: !!suggestPrincipalRemarkButton,
-                    clearFormButton: !!clearFormButton,
-                    reportForm: !!reportForm,
-                    printReportButton: !!printReportButton,
-                    saveReportButton: !!saveReportButton,
-                    shareReportButton: !!shareReportButton,
-                    includePhotoCheckbox: !!includePhotoCheckbox,
-                    studentPhotoInput: !!studentPhotoInput
-                });
-                return;
-            }
-
-            includePhotoCheckbox.addEventListener('change', () => {
-                studentPhotoInput.classList.toggle('hidden', !includePhotoCheckbox.checked);
-                if (!includePhotoCheckbox.checked) {
-                    studentPhotoInput.value = '';
-                    studentPhotoInput.removeAttribute('data-base64');
-                }
-            });
-
-            studentPhotoInput.addEventListener('change', () => {
-                const file = studentPhotoInput.files[0];
-                if (!file) return;
-                if (!['image/jpeg', 'image/png'].includes(file.type)) {
-                    alert('Please upload a JPEG or PNG image.');
-                    studentPhotoInput.value = '';
-                    return;
-                }
-                if (file.size > 2 * 1024 * 1024) {
-                    alert('Image size must be less than 2MB.');
-                    studentPhotoInput.value = '';
-                    return;
-                }
-                const reader = new FileReader();
-                reader.onload = () => {
-                    studentPhotoInput.setAttribute('data-base64', reader.result);
-                    console.log('Student photo uploaded, size:', file.size);
-                };
-                reader.onerror = () => {
-                    console.error('Error reading image file');
-                    alert('Error reading image file. Please try again.');
-                    studentPhotoInput.value = '';
-                };
-                reader.readAsDataURL(file);
-            });
-
-            classSelect.addEventListener('change', updateSubjectInputs);
-
-            termSelect.addEventListener('change', (e) => {
-                const thirdTermInputs = document.getElementById('thirdTermInputs');
-                if (thirdTermInputs) {
-                    thirdTermInputs.classList.toggle('hidden', e.target.value !== 'Third Term');
-                    const inputs = ['firstTermTotal', 'firstTermAverage', 'secondTermTotal', 'secondTermAverage'];
-                    inputs.forEach(id => {
-                        const input = document.getElementById(id);
-                        if (input) {
-                            if (e.target.value === 'Third Term') {
-                                input.setAttribute('required', '');
-                            } else {
-                                input.removeAttribute('required');
-                            }
-                        }
-                    });
-                } else {
-                    console.error('Third term inputs element not found');
-                }
-            });
-
-            addSubjectButton.addEventListener('click', () => {
-                const classSelect = document.getElementById('class');
-                const subjectsDiv = document.getElementById('subjects');
-                if (!classSelect || !subjectsDiv) {
-                    console.error('Required elements for adding subject are missing');
-                    return;
-                }
-                const isSecondary = isSecondaryClass(classSelect.value);
-                const caCount = isSecondary ? 3 : 4;
-                const examMax = isSecondary ? 70 : 60;
-                const newRow = document.createElement('div');
-                newRow.className = 'subject-row flex flex-wrap gap-3';
-                newRow.innerHTML = `
-                    <input type="text" class="subject-name p-4 border rounded-md input-large" placeholder="Subject" required>
-                    ${Array.from({ length: caCount }, (_, i) => `
-                        <input type="number" class="ca${i + 1} p-4 border rounded-md input-large" placeholder="C.A ${i + 1} (10)" min="0" max="10" required>
-                    `).join('')}
-                    <input type="number" class="exam p-4 border rounded-md input-large" placeholder="Exam (${examMax})" min="0" max="${examMax}" required>
-                    <input type="text" class="position p-4 border rounded-md input-large" placeholder="Position" required>
-                    <button type="button" class="remove-subject bg-red-500 text-white px-3 py-2 rounded-md hover:bg-red-600">Remove</button>
-                `;
-                subjectsDiv.appendChild(newRow);
-                const removeButton = newRow.querySelector('.remove-subject');
-                if (removeButton) {
-                    removeButton.addEventListener('click', () => newRow.remove());
-                } else {
-                    console.error('Remove button not found in new subject row');
-                }
-            });
-
-            suggestTeacherRemarkButton.addEventListener('click', () => {
-                const subjects = Array.from(document.querySelectorAll('.subject-row')).map(row => {
-                    const caScores = Array.from(row.querySelectorAll('.ca1, .ca2, .ca3, .ca4')).map(input => parseFloat(input.value) || 0);
-                    const exam = parseFloat(row.querySelector('.exam').value) || 0;
-                    return caScores.reduce((sum, score) => sum + score, 0) + exam;
-                });
-                const overallTotal = subjects.reduce((sum, total) => sum + total, 0);
-                const overallAverage = subjects.length ? (overallTotal / (subjects.length * 100) * 100).toFixed(2) : 0;
-                const remark = suggestRemark(overallAverage, 'teacher');
-                const teacherRemarks = document.getElementById('teacherRemarks');
-                if (teacherRemarks) {
-                    teacherRemarks.value = remark;
-                } else {
-                    console.error('Teacher remarks textarea not found');
-                }
-            });
-
-            suggestPrincipalRemarkButton.addEventListener('click', () => {
-                const subjects = Array.from(document.querySelectorAll('.subject-row')).map(row => {
-                    const caScores = Array.from(row.querySelectorAll('.ca1, .ca2, .ca3, .ca4')).map(input => parseFloat(input.value) || 0);
-                    const exam = parseFloat(row.querySelector('.exam').value) || 0;
-                    return caScores.reduce((sum, score) => sum + score, 0) + exam;
-                });
-                const overallTotal = subjects.reduce((sum, total) => sum + total, 0);
-                const overallAverage = subjects.length ? (overallTotal / (subjects.length * 100) * 100).toFixed(2) : 0;
-                const remark = suggestRemark(overallAverage, 'principal');
-                const principalRemarks = document.getElementById('principalRemarks');
-                if (principalRemarks) {
-                    principalRemarks.value = remark;
-                } else {
-                    console.error('Principal remarks textarea not found');
-                }
-            });
-
-            clearFormButton.addEventListener('click', () => {
-                if (reportForm) {
-                    reportForm.reset();
-                    document.getElementById('editIndex').value = '-1';
-                    studentPhotoInput.removeAttribute('data-base64');
-                    studentPhotoInput.classList.add('hidden');
-                    includePhotoCheckbox.checked = false;
-                    updateSubjectInputs();
-                    const thirdTermInputs = document.getElementById('thirdTermInputs');
-                    if (thirdTermInputs) {
-                        thirdTermInputs.classList.add('hidden');
-                    }
-                    const reportCard = document.getElementById('reportCard');
-                    if (reportCard) {
-                        reportCard.classList.add('hidden');
-                    }
-                    console.log('Form cleared');
-                } else {
-                    console.error('Report form not found');
-                }
-            });
-
-            reportForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                console.log('Form submitted');
-                try {
-                    const studentNameInput = document.getElementById('studentName');
-                    const admissionNumberInput = document.getElementById('admissionNumber');
-                    const classSelect = document.getElementById('class');
-                    const termSelect = document.getElementById('term');
-                    const sessionInput = document.getElementById('session');
-                    const overallPositionInput = document.getElementById('overallPosition');
-                    const teacherRemarksInput = document.getElementById('teacherRemarks');
-                    const principalRemarksInput = document.getElementById('principalRemarks');
-                    const editIndexInput = document.getElementById('editIndex');
-                    const includePhotoCheckbox = document.getElementById('includePhoto');
-                    const studentPhotoInput = document.getElementById('studentPhoto');
-
-                    if (!studentNameInput || !admissionNumberInput || !classSelect || !termSelect || !sessionInput || !overallPositionInput || !teacherRemarksInput || !principalRemarksInput || !editIndexInput || !includePhotoCheckbox || !studentPhotoInput) {
-                        console.error('One or more form inputs are missing');
-                        return;
-                    }
-
-                    const studentName = studentNameInput.value;
-                    const admissionNumber = admissionNumberInput.value;
-                    const studentClass = classSelect.value;
-                    const term = termSelect.value;
-                    const session = sessionInput.value;
-                    const overallPosition = overallPositionInput.value;
-                    const teacherRemarks = teacherRemarksInput.value;
-                    const principalRemarks = principalRemarksInput.value || '__________________________';
-                    const editIndex = parseInt(editIndexInput.value);
-                    const studentPhoto = includePhotoCheckbox.checked ? studentPhotoInput.getAttribute('data-base64') || '' : '';
-                    const isSecondary = isSecondaryClass(studentClass);
-                    const caCount = isSecondary ? 3 : 4;
-
-                    const subjects = Array.from(document.querySelectorAll('.subject-row')).map(row => {
-                        const subjectNameInput = row.querySelector('.subject-name');
-                        const examInput = row.querySelector('.exam');
-                        const positionInput = row.querySelector('.position');
-                        if (!subjectNameInput || !examInput || !positionInput) {
-                            console.error('Subject row inputs missing');
-                            return null;
-                        }
-                        const subjectName = subjectNameInput.value;
-                        const caScores = Array.from({ length: caCount }, (_, i) => parseFloat(row.querySelector(`.ca${i + 1}`)?.value) || 0);
-                        const exam = parseFloat(examInput.value) || 0;
-                        const position = positionInput.value;
-                        const total = caScores.reduce((sum, score) => sum + score, 0) + exam;
-                        const grade = getGrade(total);
-                        return { subjectName, caScores, exam, total, grade, position };
-                    }).filter(subject => subject !== null);
-
-                    const overallTotal = subjects.reduce((sum, s) => sum + s.total, 0);
-                    const overallAverage = (overallTotal / (subjects.length * 100) * 100).toFixed(2);
-
-                    let cumulativeTotal = overallTotal;
-                    let cumulativeAverage = parseFloat(overallAverage);
-                    let firstTermTotal = '';
-                    let firstTermAverage = '';
-                    let secondTermTotal = '';
-                    let secondTermAverage = '';
-                    if (term === 'Third Term') {
-                        const firstTermTotalInput = document.getElementById('firstTermTotal');
-                        const firstTermAverageInput = document.getElementById('firstTermAverage');
-                        const secondTermTotalInput = document.getElementById('secondTermTotal');
-                        const secondTermAverageInput = document.getElementById('secondTermAverage');
-                        if (!firstTermTotalInput || !firstTermAverageInput || !secondTermTotalInput || !secondTermAverageInput) {
-                            console.error('Third term inputs missing');
-                            return;
-                        }
-                        firstTermTotal = firstTermTotalInput.value;
-                        firstTermAverage = firstTermAverageInput.value;
-                        secondTermTotal = secondTermTotalInput.value;
-                        secondTermAverage = secondTermAverageInput.value;
-                        cumulativeTotal += (parseFloat(firstTermTotal) || 0) + (parseFloat(secondTermTotal) || 0);
-                        cumulativeAverage = ((parseFloat(firstTermAverage) || 0) + (parseFloat(secondTermAverage) || 0) + parseFloat(overallAverage)) / 3;
-                        cumulativeAverage = cumulativeAverage.toFixed(2);
-                    } else {
-                        cumulativeTotal = 'N/A';
-                        cumulativeAverage = 'N/A';
-                    }
-
-                    const reportStudentName = document.getElementById('reportStudentName');
-                    const reportAdmissionNumber = document.getElementById('reportAdmissionNumber');
-                    const reportClass = document.getElementById('reportClass');
-                    const reportTerm = document.getElementById('reportTerm');
-                    const reportSession = document.getElementById('reportSession');
-                    const reportTeacherRemarks = document.getElementById('reportTeacherRemarks');
-                    const reportPrincipalRemarks = document.getElementById('reportPrincipalRemarks');
-                    const overallTotalSpan = document.getElementById('overallTotal');
-                    const overallAverageSpan = document.getElementById('overallAverage');
-                    const overallPositionSpan = document.getElementById('overallPosition');
-                    const cumulativeTotalSpan = document.getElementById('cumulativeTotal');
-                    const cumulativeAverageSpan = document.getElementById('cumulativeAverage');
-                    const gradesTable = document.getElementById('reportGrades');
-                    const reportCard = document.getElementById('reportCard');
-                    const reportStudentPhoto = document.getElementById('reportStudentPhoto');
-
-                    if (!reportStudentName || !reportAdmissionNumber || !reportClass || !reportTerm || !reportSession || !reportTeacherRemarks || !reportPrincipalRemarks || !overallTotalSpan || !overallAverageSpan || !overallPositionSpan || !cumulativeTotalSpan || !cumulativeAverageSpan || !gradesTable || !reportCard || !reportStudentPhoto) {
-                        console.error('One or more report card elements are missing');
-                        return;
-                    }
-
-                    reportStudentName.textContent = studentName || 'N/A';
-                    reportAdmissionNumber.textContent = admissionNumber || 'N/A';
-                    reportClass.textContent = studentClass || 'N/A';
-                    reportTerm.textContent = term || 'N/A';
-                    reportSession.textContent = session || 'N/A';
-                    reportTeacherRemarks.textContent = teacherRemarks || 'N/A';
-                    reportPrincipalRemarks.textContent = principalRemarks;
-                    overallTotalSpan.textContent = overallTotal || 'N/A';
-                    overallAverageSpan.textContent = overallAverage || 'N/A';
-                    overallPositionSpan.textContent = overallPosition || 'N/A';
-                    cumulativeTotalSpan.textContent = cumulativeTotal;
-                    cumulativeAverageSpan.textContent = cumulativeAverage;
-                    reportStudentPhoto.src = studentPhoto || '';
-                    reportStudentPhoto.style.display = studentPhoto ? 'block' : 'none';
-
-                    gradesTable.innerHTML = subjects.length ? subjects.map(s => `
-                        <tr>
-                            <td class="border p-3">${s.subjectName}</td>
-                            ${s.caScores.map(score => `<td class="border p-3">${score}</td>`).join('')}
-                            <td class="border p-3">${s.exam}</td>
-                            <td class="border p-3">${s.total}</td>
-                            <td class="border p-3">${s.grade}</td>
-                            <td class="border p-3">${s.position}</td>
-                        </tr>
-                    `).join('') : `<tr><td colspan="${caCount + 4}" class="text-center">No grades entered yet</td></tr>`;
-
-                    reportCard.classList.remove('hidden');
-                    console.log('Report card populated:', { studentName, admissionNumber, term, overallTotal, cumulativeTotal, hasPhoto: !!studentPhoto });
-
-                    const report = {
-                        studentName,
-                        admissionNumber,
-                        class: studentClass,
-                        term,
-                        session,
-                        grades: subjects,
-                        overallTotal,
-                        overallAverage,
-                        overallPosition,
-                        teacherRemarks,
-                        principalRemarks,
-                        cumulativeTotal,
-                        cumulativeAverage,
-                        firstTermTotal,
-                        firstTermAverage,
-                        secondTermTotal,
-                        secondTermAverage,
-                        studentPhoto
-                    };
-
-                    const savedReports = JSON.parse(localStorage.getItem('reportCards') || '[]');
-                    if (editIndex >= 0 && editIndex < savedReports.length) {
-                        savedReports[editIndex] = report;
-                        console.log('Report updated at index:', editIndex);
-                        alert('Report card updated successfully!');
-                    } else {
-                        savedReports.push(report);
-                        console.log('New report saved');
-                        alert('Report card saved successfully!');
-                    }
-                    localStorage.setItem('reportCards', JSON.stringify(savedReports));
-                    editIndexInput.value = '-1';
-                    displaySavedReports();
-                } catch (error) {
-                    console.error('Error generating report card:', error);
-                    alert('An error occurred while generating the report card. Please check the console for details.');
-                }
-            });
-
-            printReportButton.addEventListener('click', () => {
-                console.log('Printing report card');
-                window.print();
-            });
-
-            saveReportButton.addEventListener('click', () => {
-                reportForm.dispatchEvent(new Event('submit'));
-            });
-
-            shareReportButton.addEventListener('click', () => {
-                try {
-                    const report = {
-                        studentName: document.getElementById('reportStudentName')?.textContent,
-                        admissionNumber: document.getElementById('reportAdmissionNumber')?.textContent,
-                        class: document.getElementById('reportClass')?.textContent,
-                        term: document.getElementById('reportTerm')?.textContent,
-                        session: document.getElementById('reportSession')?.textContent,
-                        grades: Array.from(document.getElementById('reportGrades')?.children || []).map(row => {
-                            const caCount = isSecondaryClass(document.getElementById('reportClass')?.textContent) ? 3 : 4;
-                            return {
-                                subjectName: row.children[0]?.textContent,
-                                caScores: Array.from({ length: caCount }, (_, i) => parseFloat(row.children[i + 1]?.textContent) || 0),
-                                exam: parseFloat(row.children[caCount + 1]?.textContent) || 0,
-                                total: parseFloat(row.children[caCount + 2]?.textContent) || 0,
-                                grade: row.children[caCount + 3]?.textContent,
-                                position: row.children[caCount + 4]?.textContent
-                            };
-                        }),
-                        overallTotal: document.getElementById('overallTotal')?.textContent,
-                        overallAverage: document.getElementById('overallAverage')?.textContent,
-                        overallPosition: document.getElementById('overallPosition')?.textContent,
-                        teacherRemarks: document.getElementById('reportTeacherRemarks')?.textContent,
-                        principalRemarks: document.getElementById('reportPrincipalRemarks')?.textContent,
-                        cumulativeTotal: document.getElementById('cumulativeTotal')?.textContent,
-                        cumulativeAverage: document.getElementById('cumulativeAverage')?.textContent,
-                        studentPhoto: document.getElementById('reportStudentPhoto')?.src || ''
-                    };
-                    shareReport(report);
-                } catch (error) {
-                    console.error('Error sharing generated report:', error);
-                    alert('An error occurred while sharing the report. Please check the console for details.');
-                }
-            });
-
-            function displaySavedReports() {
-                try {
-                    const savedReports = JSON.parse(localStorage.getItem('reportCards') || '[]');
-                    const savedReportsDiv = document.getElementById('savedReports');
-                    if (!savedReportsDiv) {
-                        console.error('Saved reports div not found');
-                        return;
-                    }
-                    savedReportsDiv.innerHTML = savedReports.length ? savedReports.map((report, index) => `
-                        <div class="saved-report-card">
-                            <p class="text-base"><strong>Student:</strong> ${report.studentName || 'N/A'}</p>
-                            <p class="text-base"><strong>Admission Number:</strong> ${report.admissionNumber || 'N/A'}</p>
-                            <p class="text-base"><strong>Class:</strong> ${report.class || 'N/A'}</p>
-                            <p class="text-base"><strong>Term:</strong> ${report.term || 'N/A'}</p>
-                            <p class="text-base"><strong>Session:</strong> ${report.session || 'N/A'}</p>
-                            <div class="flex space-x-4 mt-4">
-                                <button class="view-report bg-blue-500 text-white px-5 py-2.5 rounded-md hover:bg-blue-600" data-index="${index}">View Report</button>
-                                <button class="edit-report bg-yellow-500 text-white px-5 py-2.5 rounded-md hover:bg-yellow-600" data-index="${index}">Edit Report</button>
-                                <button class="share-report bg-purple-500 text-white px-5 py-2.5 rounded-md hover:bg-purple-600" data-index="${index}">Share Report</button>
-                            </div>
-                        </div>
-                    `).join('') : '<p class="text-base text-gray-600">No saved reports yet</p>';
-
-                    document.querySelectorAll('.view-report').forEach(button => {
-                        button.addEventListener('click', () => {
-                            try {
-                                const index = button.getAttribute('data-index');
-                                const report = savedReports[index];
-                                const caCount = isSecondaryClass(report.class) ? 3 : 4;
-                                const elements = {
-                                    reportStudentName: document.getElementById('reportStudentName'),
-                                    reportAdmissionNumber: document.getElementById('reportAdmissionNumber'),
-                                    reportClass: document.getElementById('reportClass'),
-                                    reportTerm: document.getElementById('reportTerm'),
-                                    reportSession: document.getElementById('reportSession'),
-                                    reportTeacherRemarks: document.getElementById('reportTeacherRemarks'),
-                                    reportPrincipalRemarks: document.getElementById('reportPrincipalRemarks'),
-                                    overallTotal: document.getElementById('overallTotal'),
-                                    overallAverage: document.getElementById('overallAverage'),
-                                    overallPosition: document.getElementById('overallPosition'),
-                                    cumulativeTotal: document.getElementById('cumulativeTotal'),
-                                    cumulativeAverage: document.getElementById('cumulativeAverage'),
-                                    gradesTableHead: document.getElementById('gradesTableHead'),
-                                    reportGrades: document.getElementById('reportGrades'),
-                                    reportCard: document.getElementById('reportCard'),
-                                    reportStudentPhoto: document.getElementById('reportStudentPhoto')
-                                };
-                                if (Object.values(elements).some(el => !el)) {
-                                    console.error('One or more report card elements are missing for viewing saved report');
-                                    return;
-                                }
-                                elements.reportStudentName.textContent = report.studentName || 'N/A';
-                                elements.reportAdmissionNumber.textContent = report.admissionNumber || 'N/A';
-                                elements.reportClass.textContent = report.class || 'N/A';
-                                elements.reportTerm.textContent = report.term || 'N/A';
-                                elements.reportSession.textContent = report.session || 'N/A';
-                                elements.reportTeacherRemarks.textContent = report.teacherRemarks || 'N/A';
-                                elements.reportPrincipalRemarks.textContent = report.principalRemarks || '__________________________';
-                                elements.overallTotal.textContent = report.overallTotal || 'N/A';
-                                elements.overallAverage.textContent = report.overallAverage || 'N/A';
-                                elements.overallPosition.textContent = report.overallPosition || 'N/A';
-                                elements.cumulativeTotal.textContent = report.cumulativeTotal || 'N/A';
-                                elements.cumulativeAverage.textContent = report.cumulativeAverage || 'N/A';
-                                elements.reportStudentPhoto.src = report.studentPhoto || '';
-                                elements.reportStudentPhoto.style.display = report.studentPhoto ? 'block' : 'none';
-                                elements.gradesTableHead.innerHTML = `
-                                    <tr>
-                                        <th class="border p-3">Subject</th>
-                                        ${Array.from({ length: caCount }, (_, i) => `<th class="border p-3">C.A ${i + 1} (10)</th>`).join('')}
-                                        <th class="border p-3">Exam (${caCount === 3 ? 70 : 60})</th>
-                                        <th class="border p-3">Total (100)</th>
-                                        <th class="border p-3">Grade</th>
-                                        <th class="border p-3">Position</th>
-                                    </tr>
-                                `;
-                                elements.reportGrades.innerHTML = report.grades.length ? report.grades.map(s => `
-                                    <tr>
-                                        <td class="border p-3">${s.subjectName}</td>
-                                        ${s.caScores.map(score => `<td class="border p-3">${score}</td>`).join('')}
-                                        <td class="border p-3">${s.exam}</td>
-                                        <td class="border p-3">${s.total}</td>
-                                        <td class="border p-3">${s.grade}</td>
-                                        <td class="border p-3">${s.position}</td>
-                                    </tr>
-                                `).join('') : `<tr><td colspan="${caCount + 4}" class="text-center">No grades entered yet</td></tr>`;
-                                elements.reportCard.classList.remove('hidden');
-                                console.log('Viewing saved report:', report);
-                            } catch (error) {
-                                console.error('Error viewing saved report:', error);
-                                alert('An error occurred while viewing the report. Please check the console for details.');
-                            }
-                        });
-                    });
-
-                    document.querySelectorAll('.edit-report').forEach(button => {
-                        button.addEventListener('click', () => {
-                            try {
-                                const index = button.getAttribute('data-index');
-                                const report = savedReports[index];
-                                populateFormWithReport(report, index);
-                                const reportCard = document.getElementById('reportCard');
-                                if (reportCard) {
-                                    reportCard.classList.add('hidden');
-                                }
-                                console.log('Editing report at index:', index);
-                            } catch (error) {
-                                console.error('Error editing saved report:', error);
-                                alert('An error occurred while editing the report. Please check the console for details.');
-                            }
-                        });
-                    });
-
-                    document.querySelectorAll('.share-report').forEach(button => {
-                        button.addEventListener('click', () => {
-                            try {
-                                const index = button.getAttribute('data-index');
-                                const report = savedReports[index];
-                                shareReport(report);
-                            } catch (error) {
-                                console.error('Error sharing saved report:', error);
-                                alert('An error occurred while sharing the saved report. Please check the console for details.');
-                            }
-                        });
-                    });
-
-                    console.log('Saved reports displayed:', savedReports.length);
-                } catch (error) {
-                    console.error('Error displaying saved reports:', error);
-                    alert('An error occurred while loading saved reports. Please check the console for details.');
-                }
-            }
-
-            updateSubjectInputs();
-            displaySavedReports();
+        document.getElementById('classSelect').addEventListener('change', () => {
+            document.getElementById('subjectInputs').innerHTML = '';
+            addSubject();
         });
+        document.getElementById('termSelect').addEventListener('change', () => {
+            document.getElementById('subjectInputs').innerHTML = '';
+            addSubject();
+        });
+        addSubject(); // Add one subject input by default
     </script>
 </body>
 </html>
