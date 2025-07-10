@@ -69,6 +69,12 @@
             z-index: -1;
             border-radius: 8px;
         }
+        .background-layer img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -146,12 +152,29 @@
         .student-details {
             background: linear-gradient(to right, #e0e7ff, #f0f4ff);
             padding: 15px;
-            border-radius: 6px;
+            border-radius: 12px;
             margin: 10px 0;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            flex-wrap: wrap;
+            align-items: flex-start;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        .student-details .personal-info {
+            flex: 1;
+            min-width: 150px;
+            padding: 5px;
+        }
+        .student-details .student-details-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            flex: 2;
+            min-width: 300px;
+            padding: 5px;
+        }
+        .student-details .student-details-info div {
+            font-size: 12px;
+            margin: 4px 0;
         }
         .student-details p {
             font-size: 14px;
@@ -175,10 +198,10 @@
         button:hover {
             background-color: #34495e;
         }
-        .remarks, .school-info, .grade-summary {
+        .remarks, .grade-summary, .extracurricular {
             margin-top: 15px;
         }
-        .remarks p, .student-title p {
+        .remarks p, .student-title p, .extracurricular p {
             font-size: 12px;
             margin: 4px 0;
         }
@@ -213,6 +236,17 @@
         .preview-container {
             display: none;
         }
+        .property-box {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            text-align: center;
+            font-size: 10px;
+            border: 1px solid #2c3e50;
+            padding: 5px;
+            background-color: #f9fafb;
+        }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.3/jspdf.plugin.autotable.min.js"></script>
@@ -224,10 +258,12 @@
             <label>School Name: <input type="text" id="schoolName" placeholder="Enter School Name" required></label><br><br>
             <label>School Address: <input type="text" id="schoolAddress" placeholder="Enter School Address" required></label><br><br>
             <label>Contact Number: <input type="text" id="contactNumber" placeholder="Enter Contact Number" required></label><br><br>
+            <label>Academic Year: <input type="text" id="academicYear" placeholder="e.g., 2024/2025" required></label><br><br>
             <label>School Logo: <input type="file" id="logoInput" accept="image/*"></label><br><br>
             <label>Watermark Background: <input type="file" id="watermarkInput" accept="image/*"></label><br><br>
             <label>Background Color: <input type="color" id="backgroundColor" value="#ffffff"></label><br><br>
             <label>Background Opacity: <input type="range" id="backgroundOpacity" min="0.1" max="1.0" step="0.1" value="1.0"></label><br><br>
+            <label>Background Picture Opacity: <input type="range" id="watermarkOpacity" min="0.1" max="1.0" step="0.1" value="0.1"></label><br><br>
             <label>Font: 
                 <select id="fontSelect">
                     <option value="Helvetica">Helvetica</option>
@@ -282,7 +318,9 @@
             <label>School Closes: <input type="date" id="schoolCloses" required></label><br><br>
             <label>Reopen Date: <input type="date" id="reopenDate" required></label><br><br>
             <label>No. of Times Student Present: <input type="number" id="studentPresentCount" min="0" required></label><br><br>
+            <label>Missed First Term (Third Term only): <input type="checkbox" id="missedFirstTerm"></label><br><br>
             <label>Teacher's Remark: <textarea id="teacherRemark"></textarea></label><br><br>
+            <label>Extracurricular Activities (optional): <textarea id="extracurricularActivities" placeholder="Enter extracurricular activities (optional)"></textarea></label><br><br>
             <h3>Subject Scores</h3>
             <div id="subjectInputs"></div>
             <button type="button" onclick="addSubject()">Add Subject</button>
@@ -298,12 +336,13 @@
             <div class="school-info">
                 <p id="previewSchoolAddress"></p>
                 <p id="previewContactNumber"></p>
+                <p id="previewAcademicYear"></p>
                 <p class="report-title">STUDENT REPORT CARD</p>
             </div>
         </div>
         <div class="student-details">
             <div id="previewPhotoContainer" class="photo-container"></div>
-            <div>
+            <div class="personal-info">
                 <p class="student-name"><strong>Student:</strong> <span id="previewStudentName"></span></p>
                 <p class="admission-number"><strong>Admission Number:</strong> <span id="previewAdmissionNumber"></span></p>
                 <p><strong>Sex:</strong> <span id="previewStudentSex"></span></p>
@@ -311,14 +350,14 @@
                 <p><strong>Term:</strong> <span id="previewTerm"></span></p>
                 <p><strong>Position:</strong> <span id="previewPosition"></span></p>
             </div>
-        </div>
-        <div class="school-info">
-            <p><strong>School Opens:</strong> <span id="previewSchoolOpens"></span></p>
-            <p><strong>School Closes:</strong> <span id="previewSchoolCloses"></span></p>
-            <p><strong>Reopen Date:</strong> <span id="previewReopenDate"></span></p>
-            <p><strong>No. of Times School Opens:</strong> <span id="previewSchoolOpenCount"></span></p>
-            <p><strong>No. of Times Student Present:</strong> <span id="previewStudentPresentCount"></span></p>
-            <p><strong>Average Attendance:</strong> <span id="previewAverageAttendance"></span>%</p>
+            <div class="student-details-info">
+                <div><strong>School Opens:</strong> <span id="previewSchoolOpens"></span></div>
+                <div><strong>School Closes:</strong> <span id="previewSchoolCloses"></span></div>
+                <div><strong>Reopen Date:</strong> <span id="previewReopenDate"></span></div>
+                <div><strong>No. of Times School Opens:</strong> <span id="previewSchoolOpenCount"></span></div>
+                <div><strong>No. of Times Student Present:</strong> <span id="previewStudentPresentCount"></span></div>
+                <div><strong>Average Attendance:</strong> <span id="previewAverageAttendance"></span>%</div>
+            </div>
         </div>
         <table id="previewTable">
             <thead id="previewTableHead"></thead>
@@ -331,11 +370,13 @@
         </div>
         <div class="remarks">
             <p><strong>Teacher's Remark:</strong> <span id="previewTeacherRemark"></span></p>
-            <p><strong>Head Teacher's Remark:</strong> <span id="previewHeadTeacherRemark">——————</span></p>
+            <p><strong>Head Teacher's Remark:</strong> <span id="previewHeadTeacherRemark">———————————————————————————</span></p>
         </div>
+        <div class="extracurricular" id="previewExtracurricular"></div>
         <div class="student-title">
             <p><strong>Student Title:</strong> <span id="previewStudentTitle"></span></p>
         </div>
+        <div class="property-box" id="previewPropertyBox"></div>
         <button type="button" onclick="saveReport()">Save Report</button>
         <button type="button" onclick="document.getElementById('previewOutput').style.display = 'none'">Edit Report</button>
     </div>
@@ -347,12 +388,13 @@
             <div class="school-info">
                 <p id="reportSchoolAddress"></p>
                 <p id="reportContactNumber"></p>
+                <p id="reportAcademicYear"></p>
                 <p class="report-title">STUDENT REPORT CARD</p>
             </div>
         </div>
         <div class="student-details">
             <div id="reportPhotoContainer" class="photo-container"></div>
-            <div>
+            <div class="personal-info">
                 <p class="student-name"><strong>Student:</strong> <span id="reportStudentName"></span></p>
                 <p class="admission-number"><strong>Admission Number:</strong> <span id="reportAdmissionNumber"></span></p>
                 <p><strong>Sex:</strong> <span id="reportStudentSex"></span></p>
@@ -360,14 +402,14 @@
                 <p><strong>Term:</strong> <span id="reportTerm"></span></p>
                 <p><strong>Position:</strong> <span id="reportPosition"></span></p>
             </div>
-        </div>
-        <div class="school-info">
-            <p><strong>School Opens:</strong> <span id="reportSchoolOpens"></span></p>
-            <p><strong>School Closes:</strong> <span id="reportSchoolCloses"></span></p>
-            <p><strong>Reopen Date:</strong> <span id="reportReopenDate"></span></p>
-            <p><strong>No. of Times School Opens:</strong> <span id="reportSchoolOpenCount"></span></p>
-            <p><strong>No. of Times Student Present:</strong> <span id="reportStudentPresentCount"></span></p>
-            <p><strong>Average Attendance:</strong> <span id="reportAverageAttendance"></span>%</p>
+            <div class="student-details-info">
+                <div><strong>School Opens:</strong> <span id="reportSchoolOpens"></span></div>
+                <div><strong>School Closes:</strong> <span id="reportSchoolCloses"></span></div>
+                <div><strong>Reopen Date:</strong> <span id="reportReopenDate"></span></div>
+                <div><strong>No. of Times School Opens:</strong> <span id="reportSchoolOpenCount"></span></div>
+                <div><strong>No. of Times Student Present:</strong> <span id="reportStudentPresentCount"></span></div>
+                <div><strong>Average Attendance:</strong> <span id="reportAverageAttendance"></span>%</div>
+            </div>
         </div>
         <table id="reportTable">
             <thead id="tableHead"></thead>
@@ -382,17 +424,29 @@
             <p><strong>Teacher's Remark:</strong> <span id="reportTeacherRemark"></span></p>
             <p><strong>Head Teacher's Remark:</strong> <span id="reportHeadTeacherRemark">——————</span></p>
         </div>
+        <div class="extracurricular" id="reportExtracurricular"></div>
         <div class="student-title">
             <p><strong>Student Title:</strong> <span id="reportStudentTitle"></span></p>
         </div>
+        <div class="property-box" id="reportPropertyBox"></div>
     </div>
 
     <script>
         const { jsPDF } = window.jspdf;
         let subjects = [];
         let savedReports = JSON.parse(localStorage.getItem('reports')) || [];
+        const jssBasicPresetSubjects = [
+            'English Language', 'Mathematics', 'Basic Science', 'Social Studies',
+            'Civic Education', 'Agricultural Science', 'Home Economics',
+            'Physical Education', 'Computer Studies', 'Creative Arts'
+        ];
+        const ssPresetSubjects = [
+            'English Language', 'Mathematics', 'Physics', 'Chemistry',
+            'Biology', 'Economics', 'Government', 'Literature-in-English',
+            'Agricultural Science', 'Computer Studies'
+        ];
 
-        function addSubject() {
+        function addSubject(subjectName = '') {
             const container = document.getElementById('subjectInputs');
             const div = document.createElement('div');
             const classType = document.getElementById('classSelect').value;
@@ -426,18 +480,26 @@
                     <input type="number" class="exam" min="0" max="70" placeholder="Exam (70)" required>
                 `;
                 scoreFields = `
-                    <label>First Term Total: <input type="number" class="firstTermTotal" min="0" max="100" required></label>
+                    <label>First Term Total: <input type="number" class="firstTermTotal" min="0" max="100"></label>
                     <label>Second Term Total: <input type="number" class="secondTermTotal" min="0" max="100" required></label>
                     <label>Third Term: ${caFields}</label>
                 `;
             }
             div.innerHTML = `
-                <label>Subject: <input type="text" class="subjectName" required></label>
+                <label>Subject: <input type="text" class="subjectName" value="${subjectName}" required></label>
                 <label>Position: <input type="text" class="subjectPosition" required></label>
                 ${scoreFields}
                 <button type="button" onclick="this.parentElement.remove()">Remove</button><br><br>
             `;
             container.appendChild(div);
+        }
+
+        function loadPresetSubjects() {
+            const container = document.getElementById('subjectInputs');
+            const classType = document.getElementById('classSelect').value;
+            container.innerHTML = '';
+            const presetSubjects = classType.startsWith('SS') ? ssPresetSubjects : jssBasicPresetSubjects;
+            presetSubjects.forEach(subject => addSubject(subject));
         }
 
         function calculateGrade(score) {
@@ -466,12 +528,12 @@
         }
 
         function generateStudentTitle(subjects, term) {
-            const scienceSubjects = ['mathematics', 'physics', 'chemistry', 'biology', 'integrated science'];
-            const artsSubjects = ['english', 'literature', 'history', 'social studies', 'geography'];
-            const vocationalSubjects = ['technical drawing', 'home economics', 'agricultural science'];
+            const scienceSubjects = ['mathematics', 'physics', 'chemistry', 'biology', 'basic science'];
+            const artsSubjects = ['english', 'english language', 'literature', 'literature-in-english', 'history', 'social studies', 'government', 'economics'];
+            const vocationalSubjects = ['technical drawing', 'home economics', 'agricultural science', 'creative arts'];
 
-            const topScore = Math.max(...subjects.map(s => term === 'Third' ? s.overallTotal : s.termTotal));
-            const topSubjects = subjects.filter(s => (term === 'Third' ? s.overallTotal : s.termTotal) === topScore);
+            const topScore = Math.max(...subjects.map(s => term === 'Third' ? s.average : s.termTotal));
+            const topSubjects = subjects.filter(s => (term === 'Third' ? s.average : s.termTotal) === topScore);
 
             if (topScore < 70) return 'Emerging Talent';
 
@@ -496,10 +558,12 @@
             const schoolName = document.getElementById('schoolName').value;
             const schoolAddress = document.getElementById('schoolAddress').value;
             const contactNumber = document.getElementById('contactNumber').value;
+            const academicYear = document.getElementById('academicYear').value;
             const font = document.getElementById('fontSelect').value;
             const textColor = document.getElementById('textColor').value;
             const photoBackgroundColor = document.getElementById('photoBackgroundColor').value;
             const backgroundOpacity = parseFloat(document.getElementById('backgroundOpacity').value);
+            const watermarkOpacity = parseFloat(document.getElementById('watermarkOpacity').value);
             const studentName = document.getElementById('studentName').value;
             const admissionNumber = document.getElementById('admissionNumber').value;
             const studentSex = document.getElementById('studentSex').value;
@@ -510,14 +574,16 @@
             const schoolCloses = document.getElementById('schoolCloses').value;
             const reopenDate = document.getElementById('reopenDate').value;
             const studentPresentCount = parseInt(document.getElementById('studentPresentCount').value) || 0;
+            const missedFirstTerm = document.getElementById('missedFirstTerm').checked;
             const teacherRemark = document.getElementById('teacherRemark').value;
+            const extracurricularActivities = document.getElementById('extracurricularActivities').value;
             const photo = document.getElementById('photoInput').files[0];
             const logo = document.getElementById('logoInput').files[0];
             const watermark = document.getElementById('watermarkInput').files[0];
             const backgroundColor = document.getElementById('backgroundColor').value;
             const photoPosition = document.getElementById('photoPosition').value;
 
-            if (!schoolName || !schoolAddress || !contactNumber || !studentName || !admissionNumber || !studentSex || !classType || !term || !position || !schoolOpens || !schoolCloses || !reopenDate || !studentPresentCount) {
+            if (!schoolName || !schoolAddress || !contactNumber || !academicYear || !studentName || !admissionNumber || !studentSex || !classType || !term || !position || !schoolOpens || !schoolCloses || !reopenDate || !studentPresentCount) {
                 alert('Please fill all required fields.');
                 return null;
             }
@@ -536,11 +602,17 @@
                     return null;
                 }
                 if (term === 'Third') {
-                    const firstTermTotal = input.querySelector('.firstTermTotal')?.value;
                     const secondTermTotal = input.querySelector('.secondTermTotal')?.value;
-                    if (!firstTermTotal || !secondTermTotal) {
-                        alert('Please fill First and Second Term Totals for Third Term.');
+                    if (!secondTermTotal) {
+                        alert('Please fill Second Term Total for Third Term.');
                         return null;
+                    }
+                    if (!missedFirstTerm) {
+                        const firstTermTotal = input.querySelector('.firstTermTotal')?.value;
+                        if (!firstTermTotal) {
+                            alert('Please fill First Term Total for Third Term when First Term is not missed.');
+                            return null;
+                        }
                     }
                 }
             }
@@ -570,13 +642,13 @@
                     ca3 = parseInt(input.querySelector('.ca3')?.value) || 0;
                     ca4 = classType.startsWith('Basic') ? parseInt(input.querySelector('.ca4')?.value) || 0 : 0;
                     exam = parseInt(input.querySelector('.exam')?.value) || 0;
-                    firstTermTotal = parseInt(input.querySelector('.firstTermTotal')?.value) || 0;
+                    firstTermTotal = missedFirstTerm ? 0 : parseInt(input.querySelector('.firstTermTotal')?.value) || 0;
                     secondTermTotal = parseInt(input.querySelector('.secondTermTotal')?.value) || 0;
                     termTotal = classType.startsWith('Basic') ? ca1 + ca2 + ca3 + ca4 + exam : ca1 + ca2 + ca3 + exam;
-                    overallTotal = firstTermTotal + secondTermTotal + termTotal;
-                    average = overallTotal / 3;
+                    overallTotal = missedFirstTerm ? secondTermTotal + termTotal : firstTermTotal + secondTermTotal + termTotal;
+                    average = overallTotal / (missedFirstTerm ? 2 : 3);
                 }
-                const grade = term === 'Third' ? calculateGrade(overallTotal) : calculateGrade(termTotal);
+                const grade = term === 'Third' ? calculateGrade(average) : calculateGrade(termTotal);
                 subjects.push({ 
                     subjectName, subjectPosition, 
                     ca1, ca2, ca3, ca4, exam, 
@@ -587,24 +659,25 @@
                 subjectCount++;
             });
 
-            const cumulativeAverage = subjectCount > 0 ? cumulativeTotal / subjectCount : 0;
+            // Normalize cumulative average for Third Term to 0–100 scale
+            const cumulativeAverage = term === 'Third' ? (subjectCount > 0 ? cumulativeTotal / (subjectCount * (missedFirstTerm ? 2 : 3)) : 0) : (subjectCount > 0 ? cumulativeTotal / subjectCount : 0);
             const overallGrade = calculateGrade(cumulativeAverage);
             const studentTitle = generateStudentTitle(subjects, term);
 
             return {
-                schoolName, schoolAddress, contactNumber, font, textColor, photoBackgroundColor, backgroundOpacity,
+                schoolName, schoolAddress, contactNumber, academicYear, font, textColor, photoBackgroundColor, backgroundOpacity, watermarkOpacity,
                 studentName, admissionNumber, studentSex, classType, term, position,
                 schoolOpens, schoolCloses, reopenDate, schoolOpenCount, studentPresentCount, averageAttendance,
-                teacherRemark, photo, logo, watermark, backgroundColor, photoPosition,
+                missedFirstTerm, teacherRemark, extracurricularActivities, photo, logo, watermark, backgroundColor, photoPosition,
                 subjects, cumulativeTotal, cumulativeAverage, overallGrade, studentTitle
             };
         }
 
         function renderReport(containerPrefix, data) {
-            const { schoolName, schoolAddress, contactNumber, font, textColor, photoBackgroundColor, backgroundOpacity,
+            const { schoolName, schoolAddress, contactNumber, academicYear, font, textColor, photoBackgroundColor, backgroundOpacity, watermarkOpacity,
                     studentName, admissionNumber, studentSex, classType, term, position,
                     schoolOpens, schoolCloses, reopenDate, schoolOpenCount, studentPresentCount, averageAttendance,
-                    teacherRemark, photo, logo, photoPosition, subjects, cumulativeTotal, cumulativeAverage, overallGrade, studentTitle } = data;
+                    teacherRemark, extracurricularActivities, photo, logo, watermark, backgroundColor, photoPosition, subjects, cumulativeTotal, cumulativeAverage, overallGrade, studentTitle } = data;
 
             // Update font and text color
             const output = document.getElementById(`${containerPrefix}Output`);
@@ -614,13 +687,20 @@
             // Update background layer
             const backgroundLayer = document.getElementById(`${containerPrefix}BackgroundLayer`);
             backgroundLayer.style.backgroundColor = backgroundColor;
-            backgroundLayer.style.opacity = backgroundOpacity;
+            backgroundLayer.innerHTML = '';
+            if (watermark) {
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(watermark);
+                img.style.opacity = watermarkOpacity;
+                backgroundLayer.appendChild(img);
+            }
 
             // Update report output
             output.style.display = 'block';
             document.getElementById(`${containerPrefix}SchoolName`).textContent = schoolName || 'School Name';
             document.getElementById(`${containerPrefix}SchoolAddress`).textContent = schoolAddress || 'N/A';
             document.getElementById(`${containerPrefix}ContactNumber`).textContent = contactNumber || 'N/A';
+            document.getElementById(`${containerPrefix}AcademicYear`).textContent = academicYear || 'N/A';
             document.getElementById(`${containerPrefix}StudentName`).textContent = studentName;
             document.getElementById(`${containerPrefix}AdmissionNumber`).textContent = admissionNumber || 'N/A';
             document.getElementById(`${containerPrefix}StudentSex`).textContent = studentSex;
@@ -640,6 +720,16 @@
             document.getElementById(`${containerPrefix}OverallGrade`).textContent = overallGrade;
             document.getElementById(`${containerPrefix}OverallGrade`).className = `grade-${overallGrade}`;
             document.getElementById(`${containerPrefix}StudentTitle`).textContent = studentTitle;
+            document.getElementById(`${containerPrefix}PropertyBox`).textContent = `Property of ${schoolName || 'School Name'}`;
+
+            // Extracurricular activities
+            const extracurricularContainer = document.getElementById(`${containerPrefix}Extracurricular`);
+            extracurricularContainer.innerHTML = '';
+            if (extracurricularActivities) {
+                const p = document.createElement('p');
+                p.innerHTML = `<strong>Extracurricular Activities:</strong> ${extracurricularActivities}`;
+                extracurricularContainer.appendChild(p);
+            }
 
             // Logo handling
             const logoContainer = document.getElementById(`${containerPrefix}LogoContainer`);
@@ -740,10 +830,10 @@
         async function exportPDF() {
             const data = generateReportData();
             if (!data) return;
-            const { schoolName, schoolAddress, contactNumber, font, textColor, photoBackgroundColor, backgroundOpacity,
+            const { schoolName, schoolAddress, contactNumber, academicYear, font, textColor, photoBackgroundColor, backgroundOpacity, watermarkOpacity,
                     studentName, admissionNumber, studentSex, classType, term, position,
                     schoolOpens, schoolCloses, reopenDate, schoolOpenCount, studentPresentCount, averageAttendance,
-                    teacherRemark, photo, logo, watermark, backgroundColor, photoPosition,
+                    teacherRemark, extracurricularActivities, photo, logo, watermark, backgroundColor, photoPosition,
                     subjects, cumulativeTotal, cumulativeAverage, overallGrade, studentTitle } = data;
 
             const doc = new jsPDF({ format: 'a4' });
@@ -759,7 +849,7 @@
                     reader.onload = () => resolve(reader.result);
                     reader.readAsDataURL(watermark);
                 });
-                doc.addImage(imgData, 'JPEG', 0, 0, 210, 297, '', 'NONE', 0.1);
+                doc.addImage(imgData, 'JPEG', 0, 0, 210, 297, '', 'NONE', watermarkOpacity);
             }
             // Set font and text color
             doc.setFont(font.toLowerCase());
@@ -783,6 +873,8 @@
             y += 4;
             doc.text(contactNumber || 'N/A', 105, y, { align: 'center' });
             y += 4;
+            doc.text(academicYear || 'N/A', 105, y, { align: 'center' });
+            y += 4;
             doc.setFontSize(12);
             doc.text('STUDENT REPORT CARD', 105, y, { align: 'center' });
             doc.line(80, y + 1, 130, y + 1); // Underline
@@ -790,7 +882,7 @@
             // Student details
             doc.setFontSize(10);
             doc.setFillColor(224, 231, 255); // Gradient start color
-            doc.rect(10, y, 190, 35, 'F'); // Background for student details
+            doc.rect(10, y, 190, 55, 'F'); // Increased height for additional info
             if (photo) {
                 doc.setFillColor(...hexToRgb(photoBackgroundColor));
                 doc.rect(photoPosition === 'left' ? 20 : 150, y + 5, 25, 25, 'F');
@@ -801,26 +893,21 @@
                 });
                 doc.addImage(imgData, 'JPEG', photoPosition === 'left' ? 20 : 150, y + 5, 25, 25, '', 'NONE', 0.9);
             }
-            doc.text(`Student: ${studentName}`, photoPosition === 'left' ? 50 : 20, y + 5);
-            doc.text(`Admission Number: ${admissionNumber}`, photoPosition === 'left' ? 50 : 20, y + 10);
-            doc.text(`Sex: ${studentSex}`, photoPosition === 'left' ? 50 : 20, y + 15);
-            doc.text(`Class: ${classType}`, photoPosition === 'left' ? 50 : 20, y + 20);
-            doc.text(`Term: ${term}`, photoPosition === 'left' ? 50 : 20, y + 25);
-            doc.text(`Position: ${position}`, photoPosition === 'left' ? 50 : 20, y + 30);
-            y += 35;
-            // School info
-            doc.text(`School Opens: ${schoolOpens || 'N/A'}`, 20, y);
-            y += 5;
-            doc.text(`School Closes: ${schoolCloses || 'N/A'}`, 20, y);
-            y += 5;
-            doc.text(`Reopen Date: ${reopenDate || 'N/A'}`, 20, y);
-            y += 5;
-            doc.text(`No. of Times School Opens: ${schoolOpenCount || 'N/A'}`, 20, y);
-            y += 5;
-            doc.text(`No. of Times Student Present: ${studentPresentCount || 'N/A'}`, 20, y);
-            y += 5;
-            doc.text(`Average Attendance: ${averageAttendance || 'N/A'}%`, 20, y);
-            y += 6;
+            const textX = photoPosition === 'left' ? 50 : 20;
+            doc.text(`Student: ${studentName}`, textX, y + 5);
+            doc.text(`Admission Number: ${admissionNumber}`, textX, y + 10);
+            doc.text(`Sex: ${studentSex}`, textX, y + 15);
+            doc.text(`Class: ${classType}`, textX, y + 20);
+            doc.text(`Term: ${term}`, textX, y + 25);
+            doc.text(`Position: ${position}`, textX, y + 30);
+            // School info in two columns
+            doc.text(`School Opens: ${schoolOpens || 'N/A'}`, 20, y + 35);
+            doc.text(`School Closes: ${schoolCloses || 'N/A'}`, 110, y + 35);
+            doc.text(`Reopen Date: ${reopenDate || 'N/A'}`, 20, y + 40);
+            doc.text(`No. of Times School Opens: ${schoolOpenCount || 'N/A'}`, 110, y + 40);
+            doc.text(`No. of Times Student Present: ${studentPresentCount || 'N/A'}`, 20, y + 45);
+            doc.text(`Average Attendance: ${averageAttendance || 'N/A'}%`, 110, y + 45);
+            y += 55;
             // Table
             const gradeColors = {
                 'A': [40, 167, 69],  // #28a745
@@ -848,7 +935,7 @@
                 subject.grade
             ]);
             if (term === 'Third') {
-                tableData.push(['Cumulative', '', '', '', '', ...(classType.startsWith('Basic') ? [''] : []), '', '', '', cumulativeTotal.toString(), cumulativeAverage.toFixed(2), '']);
+                tableData.push(['Cumulative', '', '', '', '', ...(classType.startsWith('Basic') ? [''] : []), '', '', '', '', cumulativeTotal.toString(), cumulativeAverage.toFixed(2), '']);
             }
             doc.autoTable({
                 startY: y,
@@ -892,23 +979,28 @@
             y += 5;
             doc.text(`Head Teacher's Remark: ——————`, 20, y);
             y += 5;
+            // Extracurricular activities
+            if (extracurricularActivities) {
+                doc.text(`Extracurricular Activities: ${extracurricularActivities}`, 20, y);
+                y += 5;
+            }
+            // Student title
             doc.setFontSize(12);
             doc.setFont(font.toLowerCase(), 'italic');
             doc.text(`Student Title: ${studentTitle}`, 105, y, { align: 'center' });
+            // Property of box
+            doc.setFontSize(8);
+            doc.setTextColor(...hexToRgb(textColor));
+            doc.rect(10, 287, 190, 8, 'S'); // Bottom box
+            doc.text(`Property of ${schoolName || 'School Name'}`, 105, 292, { align: 'center' });
             doc.save('report_card.pdf');
 
             renderReport('report', data);
         }
 
-        document.getElementById('classSelect').addEventListener('change', () => {
-            document.getElementById('subjectInputs').innerHTML = '';
-            addSubject();
-        });
-        document.getElementById('termSelect').addEventListener('change', () => {
-            document.getElementById('subjectInputs').innerHTML = '';
-            addSubject();
-        });
-        addSubject(); // Add one subject input by default
+        document.getElementById('classSelect').addEventListener('change', loadPresetSubjects);
+        document.getElementById('termSelect').addEventListener('change', loadPresetSubjects);
+        loadPresetSubjects(); // Load preset subjects by class on page load
     </script>
 </body>
 </html>
